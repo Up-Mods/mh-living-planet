@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "living_planet",
+	"version": "${version}",
+	"name": "Living Planet",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Up"
+	],
+	"contact": {
+		"homepage": "https://mods.upcraft.dev",
+		"sources": "https://github.com/Up-Mods/mh-living-planet",
+		"issues": "https://github.com/Up-Mods/mh-living-planet/issues",
+		"discord": "https://mods.upcraft.dev/discord"
+	},
+	"license": "https://github.com/Up-Mods/mh-living-planet/blob/HEAD/LICENSE.md",
+	"icon": "icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [],
+		"cardinal-components": ["dev.upcraft.livingplanet.component.LPComponents"]
+	},
+	"mixins": [
+		"living_planet.mixins.json"
+	],
+	"custom": {
+		"cardinal-components": [
+			"living_planet:living_planet"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.5",
+		"minecraft": "=1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"sparkweave": "*",
+		"cardinal-components-entity": "*"
+	}
+}

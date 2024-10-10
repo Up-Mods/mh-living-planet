@@ -1,0 +1,8 @@
+{
+  "commands.livingplanet.state.enabled": "Made %s a living planet",
+  "commands.livingplanet.state.disabled": "Made %s no longer a living planet",
+  "key.category.living_planet.abilities": "[MH] Living Planet",
+  "key.living_planet.ability_phase": "Phase Through Wall",
+  "key.living_planet.ability_shockwave": "Launch Shockwave",
+  "key.living_planet.toggle_form": "Emerge From Ground"
+}
