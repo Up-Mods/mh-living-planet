@@ -46,8 +46,4 @@ public class PlayerRenderHooks {
         blockRenderDispatcher.getModelRenderer().tesselateWithoutAO(levelHack, model, state, levelHack.getOrigin(), poseStack, vertexConsumer, false, player.getRandom(), seed, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
-
-    public static void renderHealthHud(LivingPlanetComponent component) {
-
-    }
 }

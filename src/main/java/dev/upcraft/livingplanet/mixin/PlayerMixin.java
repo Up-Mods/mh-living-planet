@@ -1,15 +1,18 @@
 package dev.upcraft.livingplanet.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.upcraft.livingplanet.component.LPComponents;
 import dev.upcraft.livingplanet.component.LivingPlanetComponent;
+import dev.upcraft.livingplanet.util.DummyFoodData;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,6 +63,15 @@ public abstract class PlayerMixin extends LivingEntity {
         }
 
         return true;
+    }
+
+    @ModifyReturnValue(method = "getFoodData", at = @At("RETURN"))
+    private FoodData dummyFoodData(FoodData original) {
+        if(this.getComponent(LPComponents.LIVING_PLANET).isLivingPlanet()) {
+            return DummyFoodData.INSTANCE;
+        }
+
+        return original;
     }
 
 }
