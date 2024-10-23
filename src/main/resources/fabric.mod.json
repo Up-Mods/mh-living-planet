@@ -23,6 +23,7 @@
 	"mixins": [
 		"living_planet.mixins.json"
 	],
+	"accessWidener": "living_planet.accesswidener",
 	"custom": {
 		"cardinal-components": [
 			"living_planet:living_planet"

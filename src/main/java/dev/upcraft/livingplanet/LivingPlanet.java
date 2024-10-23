@@ -1,13 +1,15 @@
 package dev.upcraft.livingplanet;
 
 import dev.upcraft.livingplanet.command.LPCommands;
-import dev.upcraft.livingplanet.entity.PlanetEntity;
-import dev.upcraft.livingplanet.init.LPEntityTypes;
+import dev.upcraft.livingplanet.component.LPComponents;
+import dev.upcraft.livingplanet.net.PhaseThroughWallPacket;
+import dev.upcraft.livingplanet.net.ShockwavePacket;
+import dev.upcraft.livingplanet.net.ToggleFormPacket;
 import dev.upcraft.sparkweave.api.entrypoint.MainEntryPoint;
 import dev.upcraft.sparkweave.api.logging.SparkweaveLoggerFactory;
 import dev.upcraft.sparkweave.api.platform.ModContainer;
-import dev.upcraft.sparkweave.api.platform.services.RegistryService;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Logger;
 
@@ -18,13 +20,22 @@ public class LivingPlanet implements MainEntryPoint {
 
 	@Override
 	public void onInitialize(ModContainer mod) {
-		LOGGER.info("Hello Fabric world!");
 		LPCommands.register();
 
-		var registryService = RegistryService.get();
-		LPEntityTypes.ENTITY_TYPES.accept(registryService);
+		PayloadTypeRegistry.playC2S().register(ToggleFormPacket.TYPE, ToggleFormPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(PhaseThroughWallPacket.TYPE, PhaseThroughWallPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(ShockwavePacket.TYPE, ShockwavePacket.CODEC);
 
-		FabricDefaultAttributeRegistry.register(LPEntityTypes.PLANET.get(), PlanetEntity.createAttributes());
+		ServerPlayNetworking.registerGlobalReceiver(ToggleFormPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				var component = context.player().getComponent(LPComponents.LIVING_PLANET);
+				component.setVisible(!component.isVisible());
+				component.sync();
+				context.player().refreshDimensions();
+			});
+		});
+
+//		var registryService = RegistryService.get();
 	}
 
 	public static ResourceLocation id(String path) {

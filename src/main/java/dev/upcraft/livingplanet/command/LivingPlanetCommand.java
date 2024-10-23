@@ -41,7 +41,11 @@ public class LivingPlanetCommand {
         var newState = enabledState == TriState.DEFAULT ? !component.isLivingPlanet() : enabledState.get();
         component.setLivingPlanet(newState);
         component.setVisible(false);
+        if(newState) {
+            component.resetHealth();
+        }
         component.sync();
+        target.refreshDimensions();
         ctx.getSource().sendSuccess(() -> newState ? Component.translatable("commands.livingplanet.state.enabled", target.getFeedbackDisplayName()) : Component.translatable("commands.livingplanet.state.disabled", target.getFeedbackDisplayName()), true);
         return Command.SINGLE_SUCCESS;
     }

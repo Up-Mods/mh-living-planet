@@ -1,11 +1,17 @@
 package dev.upcraft.livingplanet.client;
 
 import dev.upcraft.livingplanet.LivingPlanet;
+import dev.upcraft.livingplanet.component.LPComponents;
+import dev.upcraft.livingplanet.net.PhaseThroughWallPacket;
+import dev.upcraft.livingplanet.net.ShockwavePacket;
+import dev.upcraft.livingplanet.net.ToggleFormPacket;
 import dev.upcraft.sparkweave.api.entrypoint.ClientEntryPoint;
 import dev.upcraft.sparkweave.api.platform.ModContainer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 public class LPKeybinds implements ClientEntryPoint {
@@ -18,6 +24,30 @@ public class LPKeybinds implements ClientEntryPoint {
 
     private static KeyMapping create(String name, int key) {
         return KeyBindingHelper.registerKeyBinding(new KeyMapping(Util.makeDescriptionId("key", LivingPlanet.id(name)), key, CATEGORY_NAME));
+    }
+
+    public static void tickKeyMappings(Minecraft client) {
+        processKeybind(LPKeybinds.TOGGLE_FORM, client, LPKeybinds::onToggleForm);
+        processKeybind(LPKeybinds.ABILITY_PHASE, client, LPKeybinds::onAbiltiyPhase);
+        processKeybind(LPKeybinds.ABILITY_SHOCKWAVE, client, LPKeybinds::onAbilityShockwave);
+    }
+
+    private static void processKeybind(KeyMapping keyMapping, Minecraft client, Runnable action) {
+        if(keyMapping.consumeClick() && client.level != null && client.player != null && client.player.getComponent(LPComponents.LIVING_PLANET).isLivingPlanet()) {
+            action.run();
+        }
+    }
+
+    private static void onToggleForm() {
+        ClientPlayNetworking.send(ToggleFormPacket.INSTANCE);
+    }
+
+    private static void onAbiltiyPhase() {
+        ClientPlayNetworking.send(PhaseThroughWallPacket.INSTANCE);
+    }
+
+    private static void onAbilityShockwave() {
+        ClientPlayNetworking.send(ShockwavePacket.INSTANCE);
     }
 
     @Override
