@@ -41,21 +41,18 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     @WrapWithCondition(method = "actuallyHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;causeFoodExhaustion(F)V"))
-    private boolean onDamageTaken(Player instance, float exhaustion, @Share("planet_component") LocalRef<LivingPlanetComponent> componentStore) {
-        var component = getComponent(LPComponents.LIVING_PLANET);
+    private boolean lp$onDamageTaken(Player instance, float exhaustion, @Share("planet_component") LocalRef<LivingPlanetComponent> componentStore) {
+        var component = this.getComponent(LPComponents.LIVING_PLANET);
         componentStore.set(component);
-        if(component.isLivingPlanet()) {
-            return false;
-        }
-        return true;
+        return !component.isLivingPlanet();
     }
 
     @WrapWithCondition(method = "actuallyHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setHealth(F)V"))
-    private boolean onSetHealth(Player instance, float healthMinusFinalDamage, @Share("planet_component") LocalRef<LivingPlanetComponent> componentStore) {
+    private boolean lp$onSetHealth(Player instance, float healthMinusFinalDamage, @Share("planet_component") LocalRef<LivingPlanetComponent> componentStore) {
         var component = componentStore.get();
         if(component.isLivingPlanet()) {
             if(!component.isImmobilized()) {
-                var finalDamage = -(healthMinusFinalDamage - getHealth());
+                var finalDamage = -(healthMinusFinalDamage - this.getHealth());
                 component.damage(finalDamage);
                 component.sync();
             }
@@ -66,7 +63,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     @ModifyReturnValue(method = "getFoodData", at = @At("RETURN"))
-    private FoodData dummyFoodData(FoodData original) {
+    private FoodData lp$dummyFoodData(FoodData original) {
         if(this.getComponent(LPComponents.LIVING_PLANET).isLivingPlanet()) {
             return DummyFoodData.INSTANCE;
         }

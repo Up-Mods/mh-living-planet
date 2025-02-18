@@ -12,27 +12,28 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
+import static net.minecraft.commands.Commands.*;
+
 public class LivingPlanetCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("livingplanet").requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("enabled", BoolArgumentType.bool())
-                                .executes(ctx -> {
-                                    var target = EntityArgument.getPlayer(ctx, "player");
-                                    var enabledState = TriState.of(BoolArgumentType.getBool(ctx, "enabled"));
-                                    return execute(ctx, target, enabledState);
-                                })
-                        )
+        dispatcher.register(
+                literal("livingplanet").requires(source -> source.hasPermission(LEVEL_GAMEMASTERS)).then(
+                                argument("player", EntityArgument.player()).then(
+                                                argument("enabled", BoolArgumentType.bool())
+                                                        .executes(ctx -> {
+                                                            var target = EntityArgument.getPlayer(ctx, "player");
+                                                            var enabledState = TriState.of(BoolArgumentType.getBool(ctx, "enabled"));
+                                                            return execute(ctx, target, enabledState);
+                                                        }))
+                                        .executes(ctx -> {
+                                            var target = EntityArgument.getPlayer(ctx, "player");
+                                            return execute(ctx, target, TriState.DEFAULT);
+                                        }))
                         .executes(ctx -> {
-                            var target = EntityArgument.getPlayer(ctx, "player");
-                            return execute(ctx, target, TriState.DEFAULT);
+                            var player = ctx.getSource().getPlayerOrException();
+                            return execute(ctx, player, TriState.DEFAULT);
                         })
-                )
-                .executes(ctx -> {
-                    var player = ctx.getSource().getPlayerOrException();
-                    return execute(ctx, player, TriState.DEFAULT);
-                })
         );
     }
 

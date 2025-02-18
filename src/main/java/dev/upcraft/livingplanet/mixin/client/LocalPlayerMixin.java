@@ -19,7 +19,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     }
 
     @WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isControlledCamera()Z"))
-    private boolean cancelMovement(LocalPlayer instance, Operation<Boolean> original) {
+    private boolean lp$cancelMovement(LocalPlayer instance, Operation<Boolean> original) {
         if(!original.call(instance)) {
             return false;
         }

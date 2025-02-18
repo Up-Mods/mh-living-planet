@@ -11,65 +11,64 @@ import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockAndTintGetterHack implements BlockAndTintGetter {
-
+public class PinnedBrightnessBlockAndTintGetter implements BlockAndTintGetter {
     private final BlockAndTintGetter delegate;
     private final BlockPos origin;
 
-    public BlockAndTintGetterHack(BlockAndTintGetter delegate, BlockPos origin) {
+    public PinnedBrightnessBlockAndTintGetter(BlockAndTintGetter delegate, BlockPos origin) {
         this.delegate = delegate;
         this.origin = origin;
     }
 
     public BlockPos getOrigin() {
-        return origin;
+        return this.origin;
     }
 
     @Override
     public int getBrightness(LightLayer lightType, BlockPos blockPos) {
-        if(!blockPos.equals(origin)) {
-            return BlockAndTintGetter.super.getBrightness(lightType, origin);
+        if(!blockPos.equals(this.origin)) {
+            return BlockAndTintGetter.super.getBrightness(lightType, this.origin);
         }
         return BlockAndTintGetter.super.getBrightness(lightType, blockPos);
     }
 
     @Override
     public float getShade(Direction direction, boolean shade) {
-        return delegate.getShade(direction, shade);
+        return this.delegate.getShade(direction, shade);
     }
 
     @Override
     public LevelLightEngine getLightEngine() {
-        return delegate.getLightEngine();
+        return this.delegate.getLightEngine();
     }
 
     @Override
     public int getBlockTint(BlockPos blockPos, ColorResolver colorResolver) {
-        return delegate.getBlockTint(blockPos, colorResolver);
+        return this.delegate.getBlockTint(blockPos, colorResolver);
     }
 
     @Override
     public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
-        return delegate.getBlockEntity(pos);
+        return this.delegate.getBlockEntity(pos);
     }
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return delegate.getBlockState(pos);
+        return this.delegate.getBlockState(pos);
     }
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        return delegate.getFluidState(pos);
+        return this.delegate.getFluidState(pos);
     }
 
     @Override
     public int getHeight() {
-        return delegate.getHeight();
+        return this.delegate.getHeight();
     }
 
     @Override
     public int getMinBuildHeight() {
-        return delegate.getMinBuildHeight();
+        return this.delegate.getMinBuildHeight();
     }
 }

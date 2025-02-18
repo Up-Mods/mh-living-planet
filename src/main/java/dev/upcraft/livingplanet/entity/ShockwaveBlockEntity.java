@@ -36,8 +36,9 @@ public class ShockwaveBlockEntity extends FallingBlockEntity {
 
 	@Override
 	public void tick() {
-		if(onGround())
-			discard();
+		if(this.onGround()) {
+            this.discard();
+        }
 
 		super.tick();
 	}

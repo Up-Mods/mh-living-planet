@@ -39,7 +39,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public boolean isVisible() {
-        return visible;
+        return this.visible;
     }
 
     public void setLivingPlanet(boolean livingPlanet) {
@@ -47,7 +47,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public boolean isLivingPlanet() {
-        return livingPlanet;
+        return this.livingPlanet;
     }
 
     public void setHealth(float health) {
@@ -55,7 +55,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public float getHealth() {
-        return health;
+        return this.health;
     }
 
     public float getMaxHealth() {
@@ -85,7 +85,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
             if(this.immobilizedTicks <= 0) {
                 this.resetHealth();
-                sync();
+                this.sync();
             }
         }
     }
@@ -97,19 +97,19 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public void setImmobilized() {
-        immobilizedTicks = DEFAULT_IMMOBILIZED_TIME;
-        if(!player.level().isClientSide()) {
-            player.level().globalLevelEvent(LevelEvent.SOUND_END_PORTAL_SPAWN, player.blockPosition(), 0);
+        this.immobilizedTicks = DEFAULT_IMMOBILIZED_TIME;
+        if(!this.player.level().isClientSide()) {
+            this.player.level().globalLevelEvent(LevelEvent.SOUND_END_PORTAL_SPAWN, this.player.blockPosition(), 0);
         }
-        sync();
+        this.sync();
     }
 
     public boolean isImmobilized() {
-        return immobilizedTicks > 0;
+        return this.immobilizedTicks > 0;
     }
 
     public void sync() {
-        player.syncComponent(LPComponents.LIVING_PLANET);
+        this.player.syncComponent(LPComponents.LIVING_PLANET);
     }
 
     public void resetHealth() {

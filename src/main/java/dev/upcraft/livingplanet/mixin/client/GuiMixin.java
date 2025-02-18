@@ -36,14 +36,13 @@ public abstract class GuiMixin {
     @Shadow @Nullable protected abstract Player getCameraPlayer();
 
 
-
     @ModifyReturnValue(method = "isExperienceBarVisible", at = @At("RETURN"))
-    private boolean cancelXpBar(boolean original) {
+    private boolean lp$cancelXpBar(boolean original) {
         return original && !this.minecraft.player.getComponent(LPComponents.LIVING_PLANET).isLivingPlanet();
     }
 
     @Inject(method = "renderHotbarAndDecorations", at = @At("HEAD"), cancellable = true)
-    private void onRenderHotbar(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void lp$onRenderHotbar(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         var component = this.minecraft.player.getComponent(LPComponents.LIVING_PLANET);
         if (component.isLivingPlanet()) {
             this.minecraft.getProfiler().push(LivingPlanet.id("planet_health_bar").toString());

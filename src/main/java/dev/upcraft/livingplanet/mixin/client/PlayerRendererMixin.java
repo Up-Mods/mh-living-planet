@@ -28,16 +28,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void onConstruct(EntityRendererProvider.Context context, boolean useSlimModel, CallbackInfo ci) {
-        blockRenderDispatcher = context.getBlockRenderDispatcher();
+    private void lp$onConstruct(EntityRendererProvider.Context context, boolean useSlimModel, CallbackInfo ci) {
+        this.blockRenderDispatcher = context.getBlockRenderDispatcher();
     }
 
-
     @Inject(method = "render(Lnet/minecraft/client/player/AbstractClientPlayer;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"), cancellable = true)
-    private void onRender(AbstractClientPlayer entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
+    private void lp$onRender(AbstractClientPlayer entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
         var planet = entity.getComponent(LPComponents.LIVING_PLANET);
         if(planet.isLivingPlanet()) {
-            PlayerRenderHooks.renderPlayer(entity, poseStack, buffer, blockRenderDispatcher, planet, partialTicks);
+            PlayerRenderHooks.renderPlayer(entity, poseStack, buffer, this.blockRenderDispatcher, planet, partialTicks);
             ci.cancel();
         }
     }

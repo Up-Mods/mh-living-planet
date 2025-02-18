@@ -26,7 +26,7 @@ public class PlayerRenderHooks {
 
 
         var level = player.level();
-        var levelHack = new BlockAndTintGetterHack(level, pos);
+        var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos);
 
         renderBlockAt(new Vector3f(0, 0, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
 
@@ -37,7 +37,7 @@ public class PlayerRenderHooks {
         poseStack.popPose();
     }
 
-    private static void renderBlockAt(Vector3fc offset, BlockState state, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, BlockAndTintGetterHack levelHack, AbstractClientPlayer player) {
+    private static void renderBlockAt(Vector3fc offset, BlockState state, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, PinnedBrightnessBlockAndTintGetter levelHack, AbstractClientPlayer player) {
         poseStack.pushPose();
         poseStack.translate(offset.x(), offset.y(), offset.z());
         var vertexConsumer = buffer.getBuffer(ItemBlockRenderTypes.getRenderType(state, false));
