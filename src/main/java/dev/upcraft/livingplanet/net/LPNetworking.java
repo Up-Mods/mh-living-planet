@@ -2,7 +2,6 @@ package dev.upcraft.livingplanet.net;
 
 import dev.upcraft.livingplanet.component.LPComponents;
 import dev.upcraft.livingplanet.entity.ShockwaveBlockEntity;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -17,6 +16,15 @@ public class LPNetworking {
             context.server().execute(() -> {
                 var component = context.player().getComponent(LPComponents.LIVING_PLANET);
                 component.setVisible(!component.isVisible());
+                component.sync();
+                context.player().refreshDimensions();
+            });
+        });
+
+        registerC2S(TogglePhasingPacket.TYPE, TogglePhasingPacket.CODEC, (payload, context) -> {
+            context.server().execute(() -> {
+                var component = context.player().getComponent(LPComponents.LIVING_PLANET);
+                component.setPhasing(!component.isPhasing());
                 component.sync();
                 context.player().refreshDimensions();
             });

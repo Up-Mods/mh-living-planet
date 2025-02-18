@@ -2,7 +2,7 @@ package dev.upcraft.livingplanet.client;
 
 import dev.upcraft.livingplanet.LivingPlanet;
 import dev.upcraft.livingplanet.component.LPComponents;
-import dev.upcraft.livingplanet.net.PhaseThroughWallPacket;
+import dev.upcraft.livingplanet.net.TogglePhasingPacket;
 import dev.upcraft.livingplanet.net.ShockwavePacket;
 import dev.upcraft.livingplanet.net.ToggleFormPacket;
 import dev.upcraft.sparkweave.api.entrypoint.ClientEntryPoint;
@@ -43,7 +43,7 @@ public class LPKeybinds implements ClientEntryPoint {
     }
 
     private static void onAbiltiyPhase() {
-        ClientPlayNetworking.send(PhaseThroughWallPacket.INSTANCE);
+        ClientPlayNetworking.send(TogglePhasingPacket.INSTANCE);
     }
 
     private static void onAbilityShockwave() {
