@@ -2,6 +2,9 @@ package dev.upcraft.livingplanet.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.upcraft.livingplanet.component.LPComponents;
@@ -16,6 +19,10 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -25,8 +32,8 @@ public abstract class PlayerMixin extends LivingEntity {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public EntityDimensions getDimensions(Pose pose) {
+    @WrapMethod(method = "getDefaultDimensions")
+    private EntityDimensions lp$overrideDefaultDimensions(Pose pose, Operation<EntityDimensions> original) {
         var planet = this.getComponent(LPComponents.LIVING_PLANET);
         if(planet.isLivingPlanet()) {
             if(!planet.isVisible()) {
@@ -37,7 +44,7 @@ public abstract class PlayerMixin extends LivingEntity {
             }
         }
 
-        return super.getDimensions(pose);
+        return original.call(pose);
     }
 
     @WrapWithCondition(method = "actuallyHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;causeFoodExhaustion(F)V"))
