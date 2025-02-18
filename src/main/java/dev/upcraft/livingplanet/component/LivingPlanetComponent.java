@@ -1,17 +1,23 @@
 package dev.upcraft.livingplanet.component;
 
+import dev.upcraft.livingplanet.LivingPlanet;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.phys.Vec3;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
-public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent {
+public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 
     private static final int DEFAULT_IMMOBILIZED_TIME = 20 * 120;
     private static final float MAX_HEALTH = 100.0F;
@@ -91,6 +97,22 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
             if(this.immobilizedTicks <= 0) {
                 this.resetHealth();
                 this.sync();
+            }
+        }
+    }
+
+    @Override
+    public void clientTick() {
+        if (this.isVisible()) {
+            var random = player.getRandom();
+            for (int i = 0; i < 20; i++) {
+                var particle = new BlockParticleOption(LivingPlanet.BIG_TERRAIN_PARTICLE.get(), Blocks.DIRT.defaultBlockState());
+                double y = random.nextGaussian()*this.player.getBbHeight()+1;
+                double yDist = (this.player.getBbHeight()-y)/3.0;
+                double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
+                double theta = random.nextGaussian()*Math.PI*2;
+                Vec3 pos = this.player.position().add(Math.sin(theta)*displacement, y, Math.cos(theta)*displacement);
+                this.player.level().addParticle(particle, pos.x(), pos.y(), pos.z(), 0.0D, 0.0D, 0.0D);
             }
         }
     }

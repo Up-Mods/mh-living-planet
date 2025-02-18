@@ -9,6 +9,9 @@ import dev.upcraft.sparkweave.api.platform.ModContainer;
 import dev.upcraft.sparkweave.api.platform.services.RegistryService;
 import dev.upcraft.sparkweave.api.registry.RegistryHandler;
 import dev.upcraft.sparkweave.api.registry.RegistrySupplier;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -21,13 +24,17 @@ public class LivingPlanet implements MainEntryPoint {
 	public static final Logger LOGGER = SparkweaveLoggerFactory.getLogger();
 
 	public static final RegistryHandler<EntityType<?>> ENTITY_TYPES = RegistryHandler.create(Registries.ENTITY_TYPE, MODID);
+	public static final RegistryHandler<ParticleType<?>> PARTICLE_TYPES = RegistryHandler.create(Registries.PARTICLE_TYPE, MODID);
 	public static final RegistrySupplier<EntityType<ShockwaveBlockEntity>> SHOCKWAVE_BLOCK = ENTITY_TYPES.register("shockwave_block", () -> EntityType.Builder.of(ShockwaveBlockEntity::new, MobCategory.MISC).sized(EntityType.FALLING_BLOCK.getWidth(), EntityType.FALLING_BLOCK.getHeight()).clientTrackingRange(EntityType.FALLING_BLOCK.clientTrackingRange()).updateInterval(EntityType.FALLING_BLOCK.updateInterval()).build(null));
+	public static final RegistrySupplier<ParticleType<BlockParticleOption>> BIG_TERRAIN_PARTICLE = PARTICLE_TYPES.register("big_terrain",
+			() -> FabricParticleTypes.complex(BlockParticleOption::codec, BlockParticleOption::streamCodec));
 
 	@Override
 	public void onInitialize(ModContainer mod) {
 		RegistryService registryService = RegistryService.get();
 		LPCommands.register();
 		ENTITY_TYPES.accept(registryService);
+		PARTICLE_TYPES.accept(registryService);
 		LPNetworking.init();
 	}
 

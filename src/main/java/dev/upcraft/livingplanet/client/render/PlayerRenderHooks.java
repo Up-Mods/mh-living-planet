@@ -12,26 +12,49 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
+import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import java.util.Random;
+
 public class PlayerRenderHooks {
+    private static final long SEED = new Random().nextLong();
+
     public static void renderPlayer(AbstractClientPlayer player, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, LivingPlanetComponent component, float partialTicks) {
         poseStack.pushPose();
         var pos = player.blockPosition();
         var yRot = Mth.lerp(partialTicks, player.yHeadRotO, player.yHeadRot);
-        poseStack.mulPose(Axis.YP.rotationDegrees(-yRot));
-        poseStack.translate(-0.5F, 0.0F, -0.5F);
+        //poseStack.mulPose(Axis.YP.rotationDegrees(-yRot));
         var state = Blocks.DIRT.defaultBlockState();
 
 
+        var random = new SingleThreadedRandomSource(SEED);
         var level = player.level();
         var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos);
 
-        renderBlockAt(new Vector3f(0, 0, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
-
         if(component.isVisible()) {
-            renderBlockAt(new Vector3f(0, 1, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+            double maxY = player.getBoundingBox().maxY - player.getY();
+            for (int layerY = - 2; layerY < maxY; layerY++) {
+                poseStack.pushPose();
+                poseStack.translate(-0.5F, 0.0F, -0.5F);
+                renderBlockAt(new Vector3f(0, layerY, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                poseStack.popPose();
+                double distanceFromTop = (maxY - layerY)/3.0;
+                double displacement = distanceFromTop*distanceFromTop;
+                int instances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
+                for (int instance = 0; instance < instances; instance++) {
+                    double z = displacement*(0.2+random.nextFloat()*0.8);
+                    double y = layerY+random.nextDouble()*0.75;
+                    poseStack.pushPose();
+                    poseStack.translate(0, y, z);
+                    poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
+                    poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
+                    renderBlockAt(new Vector3f(0, 0, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    poseStack.popPose();
+                }
+            }
         }
 
         poseStack.popPose();
