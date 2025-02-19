@@ -107,7 +107,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
             var random = player.getRandom();
             for (int i = 0; i < 20; i++) {
                 var particle = new BlockParticleOption(LivingPlanet.BIG_TERRAIN_PARTICLE.get(), Blocks.DIRT.defaultBlockState());
-                double y = random.nextGaussian()*this.player.getBbHeight()+1;
+                double y = 0.3+random.nextGaussian()*Math.min(1, this.player.getBbHeight());
                 double yDist = (this.player.getBbHeight()-y)/3.0;
                 double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
                 double theta = random.nextGaussian()*Math.PI*2;

@@ -23,8 +23,8 @@ public class BigTerrainParticle extends TerrainParticle {
                 // blockstate
                 state);
         this.state = state;
-        this.hasPhysics = false;
-        this.lifetime = 100;
+        //this.hasPhysics = false;
+        this.lifetime = 40;
         this.quadSize *= 4;
 	}
 

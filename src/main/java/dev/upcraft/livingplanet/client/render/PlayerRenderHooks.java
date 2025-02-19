@@ -27,7 +27,8 @@ public class PlayerRenderHooks {
         var pos = player.blockPosition();
         var yRot = Mth.lerp(partialTicks, player.yHeadRotO, player.yHeadRot);
         //poseStack.mulPose(Axis.YP.rotationDegrees(-yRot));
-        var state = Blocks.DIRT.defaultBlockState();
+        var states = new BlockState[] {Blocks.DIRT.defaultBlockState(), Blocks.GRASS_BLOCK.defaultBlockState()};
+        var centreState = Blocks.STONE.defaultBlockState();
 
 
         var random = new SingleThreadedRandomSource(SEED);
@@ -39,19 +40,28 @@ public class PlayerRenderHooks {
             for (int layerY = - 2; layerY < maxY; layerY++) {
                 poseStack.pushPose();
                 poseStack.translate(-0.5F, 0.0F, -0.5F);
-                renderBlockAt(new Vector3f(0, layerY, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                renderBlockAt(new Vector3f(0, layerY, 0), centreState, poseStack, buffer, blockRenderDispatcher, levelHack, player);
                 poseStack.popPose();
                 double distanceFromTop = (maxY - layerY)/3.0;
                 double displacement = distanceFromTop*distanceFromTop;
-                int instances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
-                for (int instance = 0; instance < instances; instance++) {
+                int baseInstances = Math.max((int) (Math.PI * displacement * 4), 4);
+                for (int instance = 0; instance < baseInstances; instance++) {
+                    poseStack.pushPose();
+                    poseStack.translate(0, layerY, displacement);
+                    poseStack.rotateAround(Axis.YP.rotation((float) (((float) instance /baseInstances)*Math.PI*2)), 0, 0, (float) -displacement);
+                    poseStack.mulPose(Axis.XP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
+                    renderBlockAt(new Vector3f(0, 0, 0), states[random.nextInt(states.length)], poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    poseStack.popPose();
+                }
+                int stickingOutInstances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
+                for (int instance = 0; instance < stickingOutInstances; instance++) {
                     double z = displacement*(0.2+random.nextFloat()*0.8);
                     double y = layerY+random.nextDouble()*0.75;
                     poseStack.pushPose();
                     poseStack.translate(0, y, z);
                     poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
                     poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), state, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    renderBlockAt(new Vector3f(0, 0, 0), centreState, poseStack, buffer, blockRenderDispatcher, levelHack, player);
                     poseStack.popPose();
                 }
             }
