@@ -99,7 +99,6 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
     }
 
     private static void throwBlock(ServerLevel level, BlockPos.MutableBlockPos mutablePos, BlockPos centrePos, Player owner) {
-        mutablePos.setY(centrePos.getY()-1);
         for (int i = 0; i < 5; i++) {
             if (level.getBlockState(mutablePos.above()).is(Blocks.SAND)) {
                 mutablePos.move(Direction.UP);
