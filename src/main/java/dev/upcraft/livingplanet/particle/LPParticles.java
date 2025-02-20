@@ -10,6 +10,6 @@ import net.minecraft.core.registries.Registries;
 
 public class LPParticles {
     public static final RegistryHandler<ParticleType<?>> PARTICLE_TYPES = RegistryHandler.create(Registries.PARTICLE_TYPE, LivingPlanet.MODID);
-    public static final RegistrySupplier<ParticleType<BlockParticleOption>> BIG_TERRAIN_PARTICLE = PARTICLE_TYPES.register("big_terrain",
-            () -> FabricParticleTypes.complex(BlockParticleOption::codec, BlockParticleOption::streamCodec));
+    public static final RegistrySupplier<ParticleType<LivingPlanetTerrainParticleOption>> BIG_TERRAIN_PARTICLE = PARTICLE_TYPES.register("big_terrain",
+            () -> FabricParticleTypes.complex(LivingPlanetTerrainParticleOption::codec, LivingPlanetTerrainParticleOption::streamCodec));
 }
