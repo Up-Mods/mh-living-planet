@@ -18,7 +18,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [],
-		"cardinal-components": ["dev.upcraft.livingplanet.component.LPComponents"]
+		"cardinal-components": ["dev.upcraft.livingplanet.component.LPComponents"],
+		"fabric-datagen": ["dev.upcraft.livingplanet.LivingPlanetData"]
 	},
 	"mixins": [
 		"living_planet.mixins.json"

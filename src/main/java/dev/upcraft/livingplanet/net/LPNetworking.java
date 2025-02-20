@@ -30,16 +30,7 @@ public class LPNetworking {
             });
         });
 
-        registerC2S(ShockwavePacket.TYPE, ShockwavePacket.CODEC, (payload, context) -> {
-            context.server().execute(() -> {
-                ServerPlayer player = context.player();
-                ServerLevel level = player.serverLevel();
-
-                if (player.onGround()) {
-                    ShockwaveBlockEntity.newShockwave(level, player.blockPosition(), player.getViewVector(1f), 16, player.yBodyRot);
-                }
-            });
-        });
+        registerC2S(ShockwavePacket.TYPE, ShockwavePacket.STREAM_CODEC, ShockwavePacket::handle);
 
         //todo phase through wall packet
     }

@@ -2,8 +2,8 @@ package dev.upcraft.livingplanet.client;
 
 import dev.upcraft.livingplanet.LivingPlanet;
 import dev.upcraft.livingplanet.component.LPComponents;
-import dev.upcraft.livingplanet.net.TogglePhasingPacket;
 import dev.upcraft.livingplanet.net.ShockwavePacket;
+import dev.upcraft.livingplanet.net.TogglePhasingPacket;
 import dev.upcraft.livingplanet.net.ToggleFormPacket;
 import dev.upcraft.sparkweave.api.entrypoint.ClientEntryPoint;
 import dev.upcraft.sparkweave.api.platform.ModContainer;
@@ -47,7 +47,7 @@ public class LPKeybinds implements ClientEntryPoint {
     }
 
     private static void onAbilityShockwave() {
-        ClientPlayNetworking.send(ShockwavePacket.INSTANCE);
+        ClientPlayNetworking.send(new ShockwavePacket(Minecraft.getInstance().player.getOnPos()));
     }
 
     @Override

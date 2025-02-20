@@ -11,6 +11,12 @@ base {
 	archivesName = project.archives_base_name
 }
 
+fabricApi {
+	configureDataGeneration {
+		modId = mod_id
+	}
+}
+
 loom {
 	accessWidenerPath.set(project.file("src/main/resources/living_planet.accesswidener"))
 }

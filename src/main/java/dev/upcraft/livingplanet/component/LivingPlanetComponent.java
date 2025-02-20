@@ -1,9 +1,8 @@
 package dev.upcraft.livingplanet.component;
 
-import dev.upcraft.livingplanet.LivingPlanet;
+import dev.upcraft.livingplanet.particle.LPParticles;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -106,7 +105,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         if (this.isVisible()) {
             var random = player.getRandom();
             for (int i = 0; i < 20; i++) {
-                var particle = new BlockParticleOption(LivingPlanet.BIG_TERRAIN_PARTICLE.get(), Blocks.DIRT.defaultBlockState());
+                var particle = new BlockParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), Blocks.DIRT.defaultBlockState());
                 double y = 0.3+random.nextGaussian()*Math.min(1, this.player.getBbHeight());
                 double yDist = (this.player.getBbHeight()-y)/3.0;
                 double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
@@ -155,6 +154,15 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     public void setPhasing(boolean phasing) {
         this.phasing = phasing;
         this.sync();
+    }
+
+    //todo cooldown
+    public boolean canShockwave() {
+        return true;
+    }
+
+    public void onShockwave() {
+
     }
 
     public void sync() {
