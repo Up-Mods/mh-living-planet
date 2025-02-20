@@ -40,7 +40,7 @@ public abstract class PlayerMixin extends LivingEntity {
                 return EntityDimensions.fixed(1.0F, 1.0F);
             }
             else {
-                return EntityDimensions.fixed(1.0F, 2.0F);
+                return EntityDimensions.fixed(2.0F, 3.0F);
             }
         }
 

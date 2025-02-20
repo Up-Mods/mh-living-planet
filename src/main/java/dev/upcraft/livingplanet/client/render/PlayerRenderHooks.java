@@ -20,7 +20,7 @@ import org.joml.Vector3fc;
 import java.util.Random;
 
 public class PlayerRenderHooks {
-    private static final long SEED = new Random().nextLong();
+    public static final int SEED = 1342347;
 
     public static void renderPlayer(AbstractClientPlayer player, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, LivingPlanetComponent component, float partialTicks) {
         poseStack.pushPose();
@@ -28,6 +28,7 @@ public class PlayerRenderHooks {
         var yRot = Mth.lerp(partialTicks, player.yHeadRotO, player.yHeadRot);
         //poseStack.mulPose(Axis.YP.rotationDegrees(-yRot));
         var states = new BlockState[] {Blocks.DIRT.defaultBlockState(), Blocks.GRASS_BLOCK.defaultBlockState()};
+        var stickingOutStates = new BlockState[] {Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.GRASS_BLOCK.defaultBlockState()};
         var centreState = Blocks.STONE.defaultBlockState();
 
 
@@ -61,7 +62,7 @@ public class PlayerRenderHooks {
                     poseStack.translate(0, y, z);
                     poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
                     poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), centreState, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    renderBlockAt(new Vector3f(0, 0, 0), stickingOutStates[random.nextInt(stickingOutStates.length)], poseStack, buffer, blockRenderDispatcher, levelHack, player);
                     poseStack.popPose();
                 }
             }
