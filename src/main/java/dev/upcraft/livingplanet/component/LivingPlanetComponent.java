@@ -19,6 +19,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 
     private static final int DEFAULT_IMMOBILIZED_TIME = 20 * 120;
+    private static final int DEFAULT_SHOCKWAVE_COOLDOWN = 20 * 120;
     private static final float MAX_HEALTH = 100.0F;
 
     private final Player player;
@@ -34,6 +35,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     private boolean visible = false;
 
     private int immobilizedTicks = 0;
+    private int shockwaveCooldownTicks = 0;
 
     private float health;
     private boolean phasing = false;
@@ -98,6 +100,12 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                 this.sync();
             }
         }
+        if (this.shockwaveCooldownTicks > 0) {
+            this.shockwaveCooldownTicks--;
+            if (this.shockwaveCooldownTicks <= 0) {
+                this.sync();
+            }
+        }
     }
 
     @Override
@@ -120,6 +128,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     public void writeSyncPacket(RegistryFriendlyByteBuf buf, ServerPlayer recipient) {
         ByteBufCodecs.BOOL.encode(buf, this.livingPlanet);
         ByteBufCodecs.BOOL.encode(buf, this.visible);
+        ByteBufCodecs.VAR_INT.encode(buf, this.shockwaveCooldownTicks);
         ByteBufCodecs.VAR_INT.encode(buf, this.immobilizedTicks);
         ByteBufCodecs.FLOAT.encode(buf, this.health);
         ByteBufCodecs.BOOL.encode(buf, this.phasing);
@@ -129,6 +138,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     public void applySyncPacket(RegistryFriendlyByteBuf buf) {
         this.livingPlanet = ByteBufCodecs.BOOL.decode(buf);
         this.visible = ByteBufCodecs.BOOL.decode(buf);
+        this.shockwaveCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.immobilizedTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.health = ByteBufCodecs.FLOAT.decode(buf);
         this.phasing = ByteBufCodecs.BOOL.decode(buf);
@@ -156,13 +166,13 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.sync();
     }
 
-    //todo cooldown
     public boolean canShockwave() {
-        return true;
+        return this.shockwaveCooldownTicks <= 0;
     }
 
     public void onShockwave() {
-
+        this.shockwaveCooldownTicks = DEFAULT_SHOCKWAVE_COOLDOWN;
+        this.sync();
     }
 
     public void sync() {

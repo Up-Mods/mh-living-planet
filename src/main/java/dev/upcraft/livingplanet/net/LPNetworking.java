@@ -31,8 +31,6 @@ public class LPNetworking {
         });
 
         registerC2S(ShockwavePacket.TYPE, ShockwavePacket.STREAM_CODEC, ShockwavePacket::handle);
-
-        //todo phase through wall packet
     }
 
     private static <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ServerPlayNetworking.PlayPayloadHandler<T> handler) {
