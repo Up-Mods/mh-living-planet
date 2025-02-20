@@ -2,20 +2,32 @@ package dev.upcraft.livingplanet.component;
 
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.livingplanet.particle.LivingPlanetTerrainParticleOption;
+import dev.upcraft.livingplanet.util.SurroundingBlockType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
+import java.util.function.UnaryOperator;
 
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 
@@ -111,10 +123,11 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     @Override
     public void clientTick() {
+        this.updateSurroundings();
         if (this.isVisible()) {
-            var random = player.getRandom();
+            var random = this.player.getRandom();
             for (int i = 0; i < 20; i++) {
-                var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), Blocks.DIRT.defaultBlockState(), player.getId());
+                var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), this.getRandomState(random::nextInt), this.player.getId());
                 double y = 0.3+random.nextGaussian()*Math.min(1, this.player.getBbHeight());
                 double yDist = (this.player.getBbHeight()-y)/3.0;
                 double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
@@ -189,5 +202,62 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         if(this.getHealth() <= 0) {
             this.setImmobilized();
         }
+    }
+
+    private final Map<SurroundingBlockType, Integer> surroundingsCount = new HashMap<>();
+    private final List<SurroundingBlockType> surroundingsList = new ArrayList<>();
+    private int totalSurroundingsCount = 1;
+
+    public BlockState getRandomState(IntUnaryOperator random) {
+        if (this.surroundingsList.isEmpty()) {
+            random.applyAsInt(1);
+            random.applyAsInt(1);
+            return Blocks.DIRT.defaultBlockState();
+        }
+        int surroundingsIndex = random.applyAsInt(this.totalSurroundingsCount);
+        for (var surroundings : this.surroundingsList) {
+            int count = this.surroundingsCount.get(surroundings);
+            if (surroundingsIndex >= count) {
+                surroundingsIndex -= count;
+            } else {
+                return surroundings.get(random);
+            }
+        }
+
+        random.applyAsInt(1);
+        return Blocks.DIRT.defaultBlockState();
+    }
+
+    //todo make this wayyyy more stable
+    private void updateSurroundings() {
+        Level level = this.player.level();
+        Holder<Biome> biome = level.getBiome(this.player.blockPosition());
+        boolean addedAny = false;
+        for (var surroundingPos : BlockPos.randomBetweenClosed(this.player.getRandom(),
+                5,
+                this.player.getBlockX() - 10,
+                this.player.getBlockY() - 4,
+                this.player.getBlockZ() + 10,
+                this.player.getBlockX() + 10,
+                this.player.getBlockY() + 1,
+                this.player.getBlockZ() + 10)) {
+            var state = level.getBlockState(surroundingPos);
+            if (!state.isCollisionShapeFullBlock(level, surroundingPos)) {
+                continue;
+            }
+            addedAny = true;
+
+            SurroundingBlockType type = new SurroundingBlockType.Unknown(state);
+            this.surroundingsCount.compute(type, ($, c) -> c == null ? 2 : c > 7 ? c : c + 1);
+            if (!this.surroundingsList.contains(type)) {
+                this.surroundingsList.add(type);
+            }
+        }
+        if (addedAny && level.getGameTime() % 20 == 0) {
+            this.surroundingsList.forEach(l -> this.surroundingsCount.computeIfPresent(l, ($, c) -> c - 1));
+            this.surroundingsList.removeIf(s -> this.surroundingsCount.get(s) <= 0);
+        }
+        this.surroundingsList.forEach(l -> this.surroundingsCount.computeIfPresent(l, ($, c) -> c > 5 ? 5 : c));
+        this.totalSurroundingsCount = this.surroundingsCount.values().stream().mapToInt($ -> $).sum();
     }
 }

@@ -41,7 +41,7 @@ public class PlayerRenderHooks {
             for (int layerY = - 2; layerY < maxY; layerY++) {
                 poseStack.pushPose();
                 poseStack.translate(-0.5F, 0.0F, -0.5F);
-                renderBlockAt(new Vector3f(0, layerY, 0), centreState, poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                renderBlockAt(new Vector3f(0, layerY, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                 poseStack.popPose();
                 double distanceFromTop = (maxY - layerY)/3.0;
                 double displacement = distanceFromTop*distanceFromTop;
@@ -51,7 +51,7 @@ public class PlayerRenderHooks {
                     poseStack.translate(0, layerY, displacement);
                     poseStack.rotateAround(Axis.YP.rotation((float) (((float) instance /baseInstances)*Math.PI*2)), 0, 0, (float) -displacement);
                     poseStack.mulPose(Axis.XP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), states[random.nextInt(states.length)], poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                     poseStack.popPose();
                 }
                 int stickingOutInstances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
@@ -62,7 +62,7 @@ public class PlayerRenderHooks {
                     poseStack.translate(0, y, z);
                     poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
                     poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), stickingOutStates[random.nextInt(stickingOutStates.length)], poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                    renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                     poseStack.popPose();
                 }
             }
