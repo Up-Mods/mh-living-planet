@@ -47,6 +47,10 @@ repositories {
 		name = "Up-Mods"
 		url = "https://maven.uuid.gg/releases"
 	}
+	maven {
+		name = "willbl"
+		url = "https://maven.willbl.dev/releases"
+	}
 }
 
 dependencies {
@@ -63,6 +67,8 @@ dependencies {
 
 	modImplementation "dev.upcraft.sparkweave:Sparkweave-Fabric:${project.sparkweave_version}"
 	include "dev.upcraft.sparkweave:Sparkweave-Fabric:${project.sparkweave_version}"
+
+	modImplementation include("xyz.amymialee:mialib:${project.mialib_version}")
 
 	def cca_modules = ["base", "entity"]
 

@@ -7,9 +7,12 @@ import dev.upcraft.livingplanet.component.LivingPlanetComponent;
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
 import dev.upcraft.livingplanet.entity.ShockwaveBlockEntity;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -21,10 +24,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import static dev.upcraft.livingplanet.LivingPlanet.id;
+
 public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
-    public static final Type<ShockwavePacket> TYPE = new Type<>(LivingPlanet.id("ability_shockwave"));
+    public static final Type<ShockwavePacket> TYPE = new Type<>(id("ability_shockwave"));
     public static final StreamCodec<FriendlyByteBuf, ShockwavePacket> STREAM_CODEC = BlockPos.STREAM_CODEC
             .map(ShockwavePacket::new, ShockwavePacket::pos).cast();
+    public static final String COOLDOWN_MESSAGE_KEY = Util.makeDescriptionId("message", id("shockwave.cooldown"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -35,6 +41,7 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
         var player = ctx.player();
         var cooldowns = player.getComponent(LPComponents.LIVING_PLANET);
         if (!cooldowns.canShockwave()) {
+            player.displayClientMessage(Component.translatable(COOLDOWN_MESSAGE_KEY).withStyle(ChatFormatting.RED), true);
             return;
         }
 
@@ -46,7 +53,10 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
         var right = forwards.getClockWise();
         var mutablePos = this.pos.mutable();
 
-        mutablePos.move(left).move(left);
+        mutablePos.move(left);
+        throwBlock(level, mutablePos, this.pos, player);
+
+        mutablePos.move(left);
         throwBlock(level, mutablePos, this.pos, player);
 
         mutablePos.move(forwards);
@@ -71,6 +81,12 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
         throwBlock(level, mutablePos, this.pos, player);
 
         mutablePos.move(backwards);
+        throwBlock(level, mutablePos, this.pos, player);
+
+        mutablePos.move(left);
+        throwBlock(level, mutablePos, this.pos, player);
+
+        mutablePos.move(left).move(forwards);
         throwBlock(level, mutablePos, this.pos, player);
 
         var damageSource = level.damageSources().source(LPDamageTypes.SHOCKWAVE, player);

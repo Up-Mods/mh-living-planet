@@ -1,6 +1,8 @@
 package dev.upcraft.livingplanet;
 
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
+import dev.upcraft.livingplanet.entity.LPEntities;
+import dev.upcraft.livingplanet.net.ShockwavePacket;
 import dev.upcraft.livingplanet.tag.LPTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -44,6 +46,13 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             builder.add("key.living_planet.ability_phase", "Phase Through Wall");
             builder.add("key.living_planet.ability_shockwave", "Launch Shockwave");
             builder.add("key.living_planet.toggle_form", "Emerge From Ground");
+            builder.add(LPEntities.SHOCKWAVE_BLOCK.get(), "Shockwave Block");
+            builder.add(LPOptions.CATEGORY.getTranslationKey(), "Living Planet");
+            builder.add(LPOptions.SHOCKWAVE_DAMAGE.getTranslationKey(), "Shockwave Damage");
+            builder.add(LPOptions.SHOCKWAVE_DAMAGE.getDescriptionTranslationKey(), "How many half-hearts of damage a shockwave does.");
+            builder.add(LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.getTranslationKey(), "Shockwave Cooldown (secs)");
+            builder.add(LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the shockwave ability.");
+            builder.add(ShockwavePacket.COOLDOWN_MESSAGE_KEY, "This ability is cooling down.");
         }
     }
 

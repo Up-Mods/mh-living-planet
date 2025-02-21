@@ -4,6 +4,7 @@ import dev.upcraft.livingplanet.command.LPCommands;
 import dev.upcraft.livingplanet.entity.LPEntities;
 import dev.upcraft.livingplanet.net.LPNetworking;
 import dev.upcraft.livingplanet.particle.LPParticles;
+import dev.upcraft.livingplanet.tag.LPTags;
 import dev.upcraft.sparkweave.api.entrypoint.MainEntryPoint;
 import dev.upcraft.sparkweave.api.logging.SparkweaveLoggerFactory;
 import dev.upcraft.sparkweave.api.platform.ModContainer;
@@ -23,6 +24,8 @@ public class LivingPlanet implements MainEntryPoint {
 		LPEntities.ENTITY_TYPES.accept(registryService);
 		LPParticles.PARTICLE_TYPES.accept(registryService);
 		LPNetworking.init();
+		LPTags.init();
+		LPOptions.init();
 	}
 
 	public static ResourceLocation id(String path) {

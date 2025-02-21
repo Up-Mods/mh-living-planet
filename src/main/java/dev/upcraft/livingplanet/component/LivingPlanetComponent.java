@@ -1,5 +1,6 @@
 package dev.upcraft.livingplanet.component;
 
+import dev.upcraft.livingplanet.LPOptions;
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.livingplanet.particle.LivingPlanetTerrainParticleOption;
 import dev.upcraft.livingplanet.tag.LPTags;
@@ -183,7 +184,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public void onShockwave() {
-        this.shockwaveCooldownTicks = DEFAULT_SHOCKWAVE_COOLDOWN;
+        this.shockwaveCooldownTicks = LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.get()*20;
         this.sync();
     }
 

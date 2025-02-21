@@ -1,8 +1,15 @@
 {
   "commands.livingplanet.state.disabled": "Made %s no longer a living planet",
   "commands.livingplanet.state.enabled": "Made %s a living planet",
+  "entity.living_planet.shockwave_block": "Shockwave Block",
   "key.category.living_planet.abilities": "[MH] Living Planet",
   "key.living_planet.ability_phase": "Phase Through Wall",
   "key.living_planet.ability_shockwave": "Launch Shockwave",
-  "key.living_planet.toggle_form": "Emerge From Ground"
+  "key.living_planet.toggle_form": "Emerge From Ground",
+  "message.living_planet.shockwave.cooldown": "This ability is cooling down.",
+  "mvalue.living_planet.shockwave_cooldown": "Shockwave Cooldown (secs)",
+  "mvalue.living_planet.shockwave_cooldown.desc": "How many seconds a player must wait between using the shockwave ability.",
+  "mvalue.living_planet.shockwave_damage": "Shockwave Damage",
+  "mvalue.living_planet.shockwave_damage.desc": "How many half-hearts of damage a shockwave does.",
+  "mvaluecategory.living_planet.living_planet": "Living Planet"
 }
