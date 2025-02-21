@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.upcraft.livingplanet.component.LPComponents;
@@ -19,10 +18,6 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Map;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -36,8 +31,8 @@ public abstract class PlayerMixin extends LivingEntity {
     private EntityDimensions lp$overrideDefaultDimensions(Pose pose, Operation<EntityDimensions> original) {
         var planet = this.getComponent(LPComponents.LIVING_PLANET);
         if(planet.isLivingPlanet()) {
-            if(!planet.isVisible()) {
-                return EntityDimensions.fixed(1.0F, 1.0F);
+            if(!planet.isOutOfGround()) {
+                return EntityDimensions.fixed(0.25F, 0.25F);
             }
             else {
                 return EntityDimensions.fixed(2.0F, 3.0F);

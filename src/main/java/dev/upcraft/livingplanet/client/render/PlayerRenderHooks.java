@@ -13,11 +13,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
-import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-
-import java.util.Random;
 
 public class PlayerRenderHooks {
     public static final int SEED = 1342347;
@@ -36,7 +33,7 @@ public class PlayerRenderHooks {
         var level = player.level();
         var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos);
 
-        if(component.isVisible()) {
+        if(component.isOutOfGround()) {
             double maxY = player.getBoundingBox().maxY - player.getY();
             for (int layerY = - 2; layerY < maxY; layerY++) {
                 poseStack.pushPose();

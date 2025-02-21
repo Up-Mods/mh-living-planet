@@ -44,7 +44,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     /**
      * whether the player is currently visible (= above ground) or not
      */
-    private boolean visible = false;
+    private boolean outOfGround = false;
 
     private int immobilizedTicks = 0;
     private int shockwaveCooldownTicks = 0;
@@ -56,20 +56,27 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.player = player;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setOutOfGround(boolean visible) {
+        this.outOfGround = visible;
     }
 
-    public boolean isVisible() {
-        return this.visible;
+    public boolean isOutOfGround() {
+        return this.outOfGround || this.player.isSpectator() || this.player.isDeadOrDying();
     }
 
     public void setLivingPlanet(boolean livingPlanet) {
         this.livingPlanet = livingPlanet;
+        if (!livingPlanet) {
+            this.outOfGround = false;
+            this.immobilizedTicks = 0;
+            this.shockwaveCooldownTicks = 0;
+            this.health = MAX_HEALTH;
+            this.phasing = false;
+        }
     }
 
     public boolean isLivingPlanet() {
-        return this.livingPlanet;
+        return this.livingPlanet && !this.player.isSpectator(); // allow being living planet while dying tho
     }
 
     public void setHealth(float health) {
@@ -87,7 +94,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void readFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         this.livingPlanet = tag.getBoolean("active");
-        this.visible = tag.getBoolean("visible");
+        this.outOfGround = tag.getBoolean("visible");
         this.immobilizedTicks = tag.getInt("immobilizedTicks");
         this.health = tag.getFloat("health");
         this.phasing = tag.getBoolean("phasing");
@@ -96,7 +103,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void writeToNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         tag.putBoolean("active", this.livingPlanet);
-        tag.putBoolean("visible", this.visible);
+        tag.putBoolean("visible", this.outOfGround);
         tag.putInt("immobilizedTicks", this.immobilizedTicks);
         tag.putFloat("health", this.health);
         tag.putBoolean("phasing", this.phasing);
@@ -123,7 +130,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void clientTick() {
         this.updateSurroundings();
-        if (this.isVisible()) {
+        if (this.isOutOfGround()) {
             var random = this.player.getRandom();
             for (int i = 0; i < 20; i++) {
                 var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), this.getRandomState(random::nextInt), this.player.getId());
@@ -140,7 +147,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void writeSyncPacket(RegistryFriendlyByteBuf buf, ServerPlayer recipient) {
         ByteBufCodecs.BOOL.encode(buf, this.livingPlanet);
-        ByteBufCodecs.BOOL.encode(buf, this.visible);
+        ByteBufCodecs.BOOL.encode(buf, this.outOfGround);
         ByteBufCodecs.VAR_INT.encode(buf, this.shockwaveCooldownTicks);
         ByteBufCodecs.VAR_INT.encode(buf, this.immobilizedTicks);
         ByteBufCodecs.FLOAT.encode(buf, this.health);
@@ -150,7 +157,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void applySyncPacket(RegistryFriendlyByteBuf buf) {
         this.livingPlanet = ByteBufCodecs.BOOL.decode(buf);
-        this.visible = ByteBufCodecs.BOOL.decode(buf);
+        this.outOfGround = ByteBufCodecs.BOOL.decode(buf);
         this.shockwaveCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.immobilizedTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.health = ByteBufCodecs.FLOAT.decode(buf);
@@ -171,7 +178,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public boolean isPhasing() {
-        return this.phasing;
+        return this.phasing && !this.player.isSpectator() && !this.player.isDeadOrDying();
     }
 
     public void setPhasing(boolean phasing) {

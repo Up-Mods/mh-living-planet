@@ -7,7 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.upcraft.livingplanet.component.LPComponents;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +40,7 @@ public class LivingPlanetCommand {
         var component = target.getComponent(LPComponents.LIVING_PLANET);
         var newState = enabledState == TriState.DEFAULT ? !component.isLivingPlanet() : enabledState.get();
         component.setLivingPlanet(newState);
-        component.setVisible(false);
+        component.setOutOfGround(false);
         if(newState) {
             component.resetHealth();
         }
