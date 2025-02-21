@@ -2,16 +2,16 @@ package dev.upcraft.livingplanet.component;
 
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.livingplanet.particle.LivingPlanetTerrainParticleOption;
+import dev.upcraft.livingplanet.tag.LPTags;
 import dev.upcraft.livingplanet.util.SurroundingBlockType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -25,9 +25,7 @@ import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
-import java.util.function.UnaryOperator;
 
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 
@@ -204,60 +202,58 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         }
     }
 
-    private final Map<SurroundingBlockType, Integer> surroundingsCount = new HashMap<>();
-    private final List<SurroundingBlockType> surroundingsList = new ArrayList<>();
-    private int totalSurroundingsCount = 1;
+    private final Map<SurroundingBlockType, Integer> surroundings = new HashMap<>();
+    private final Set<SurroundingBlockType> effectiveSurroundings = new HashSet<>();
 
     public BlockState getRandomState(IntUnaryOperator random) {
-        if (this.surroundingsList.isEmpty()) {
+        if (this.effectiveSurroundings.isEmpty()) {
             random.applyAsInt(1);
             random.applyAsInt(1);
             return Blocks.DIRT.defaultBlockState();
         }
-        int surroundingsIndex = random.applyAsInt(this.totalSurroundingsCount);
-        for (var surroundings : this.surroundingsList) {
-            int count = this.surroundingsCount.get(surroundings);
-            if (surroundingsIndex >= count) {
-                surroundingsIndex -= count;
-            } else {
+        int surroundingsIndex = random.applyAsInt(this.effectiveSurroundings.size());
+        for (var surroundings : this.effectiveSurroundings) {
+            if (surroundingsIndex-- == 0) {
                 return surroundings.get(random);
             }
         }
 
         random.applyAsInt(1);
-        return Blocks.DIRT.defaultBlockState();
+        return Blocks.DIAMOND_BLOCK.defaultBlockState();
     }
 
-    //todo make this wayyyy more stable
     private void updateSurroundings() {
         Level level = this.player.level();
         Holder<Biome> biome = level.getBiome(this.player.blockPosition());
-        boolean addedAny = false;
-        for (var surroundingPos : BlockPos.randomBetweenClosed(this.player.getRandom(),
-                5,
+        RandomSource random = this.player.getRandom();
+        Set<SurroundingBlockType> newSurroundings = new HashSet<>();
+        for (var surroundingPos : BlockPos.randomBetweenClosed(random,
+                30,
                 this.player.getBlockX() - 10,
-                this.player.getBlockY() - 4,
+                this.player.getBlockY() - 5,
                 this.player.getBlockZ() + 10,
                 this.player.getBlockX() + 10,
-                this.player.getBlockY() + 1,
+                this.player.getBlockY() + 0,
                 this.player.getBlockZ() + 10)) {
             var state = level.getBlockState(surroundingPos);
-            if (!state.isCollisionShapeFullBlock(level, surroundingPos)) {
+            if (!state.is(LPTags.LIVING_PLANET_BLOCKS) || !state.isCollisionShapeFullBlock(level, surroundingPos)) {
                 continue;
             }
-            addedAny = true;
 
             SurroundingBlockType type = new SurroundingBlockType.Unknown(state);
-            this.surroundingsCount.compute(type, ($, c) -> c == null ? 2 : c > 7 ? c : c + 1);
-            if (!this.surroundingsList.contains(type)) {
-                this.surroundingsList.add(type);
+            this.surroundings.compute(type, ($, c) -> c == null ? 10 : Math.min(100, c + 1));
+        }
+
+        this.effectiveSurroundings.clear();
+        for (var iter = this.surroundings.entrySet().iterator(); iter.hasNext();) {
+            var entry = iter.next();
+            entry.setValue(entry.getValue() - 1);
+            if (entry.getValue() <= 0) {
+                iter.remove();
+            }
+            if (entry.getValue() >= 50) {
+                this.effectiveSurroundings.add(entry.getKey());
             }
         }
-        if (addedAny && level.getGameTime() % 20 == 0) {
-            this.surroundingsList.forEach(l -> this.surroundingsCount.computeIfPresent(l, ($, c) -> c - 1));
-            this.surroundingsList.removeIf(s -> this.surroundingsCount.get(s) <= 0);
-        }
-        this.surroundingsList.forEach(l -> this.surroundingsCount.computeIfPresent(l, ($, c) -> c > 5 ? 5 : c));
-        this.totalSurroundingsCount = this.surroundingsCount.values().stream().mapToInt($ -> $).sum();
     }
 }

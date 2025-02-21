@@ -1,6 +1,7 @@
 package dev.upcraft.livingplanet;
 
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
+import dev.upcraft.livingplanet.tag.LPTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -11,9 +12,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,9 +25,10 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         var pack  = fabricDataGenerator.createPack();
-                pack.addProvider(Lang::new);
-                pack.addProvider(DamageTypes::new);
-                pack.addProvider(DamageTypeTags::new);
+        pack.addProvider(Lang::new);
+        pack.addProvider(DamageTypes::new);
+        pack.addProvider(DamageTypeTags::new);
+        pack.addProvider(BlockTags::new);
     }
 
     public static class Lang extends FabricLanguageProvider {
@@ -75,6 +80,30 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
         protected void addTags(HolderLookup.Provider wrapperLookup) {
             this.tag(net.minecraft.tags.DamageTypeTags.PANIC_CAUSES)
                     .addOptional(LPDamageTypes.SHOCKWAVE.location());
+        }
+    }
+
+    public static class BlockTags extends FabricTagProvider<Block> {
+        /**
+         * Constructs a new {@link FabricTagProvider} with the default computed path.
+         *
+         * <p>Common implementations of this class are provided.
+         *
+         * @param output           the {@link FabricDataOutput} instance
+         * @param registriesFuture the backing registry for the tag type
+         */
+        public BlockTags(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+            super(output, Registries.BLOCK, registriesFuture);
+        }
+
+        @Override
+        protected void addTags(HolderLookup.Provider wrapperLookup) {
+            this.tag(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES);
+            this.tag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES);
+            this.tag(LPTags.LIVING_PLANET_BLOCKS)
+                    .addTag(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES)
+                    .addTag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES)
+                    .add(Blocks.GRASS_BLOCK.builtInRegistryHolder().key(), Blocks.MYCELIUM.builtInRegistryHolder().key(), Blocks.SNOW_BLOCK.builtInRegistryHolder().key(), Blocks.END_STONE.builtInRegistryHolder().key());
         }
     }
 }

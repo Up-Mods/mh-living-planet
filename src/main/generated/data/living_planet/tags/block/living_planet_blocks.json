@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#minecraft:overworld_carver_replaceables",
+    "#minecraft:nether_carver_replaceables",
+    "minecraft:grass_block",
+    "minecraft:mycelium",
+    "minecraft:snow_block",
+    "minecraft:end_stone"
+  ]
+}
