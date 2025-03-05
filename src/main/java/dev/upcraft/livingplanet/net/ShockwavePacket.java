@@ -40,6 +40,10 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
     public void handle(ServerPlayNetworking.Context ctx) {
         var player = ctx.player();
         var cooldowns = player.getComponent(LPComponents.LIVING_PLANET);
+        if (!cooldowns.isOutOfGround()) {
+            return;
+        }
+
         if (!cooldowns.canShockwave()) {
             player.displayClientMessage(Component.translatable(COOLDOWN_MESSAGE_KEY).withStyle(ChatFormatting.RED), true);
             return;
@@ -127,6 +131,5 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
                 .add(0.0, 0.7, 0.0)
                 .scale(0.7);
         ShockwaveBlockEntity.create(level, mutablePos, state, dir, owner, centrePos);
-        //todo fx
     }
 }

@@ -204,6 +204,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     public void onShockwave() {
         this.shockwaveCooldownTicks = LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.get()*20;
+        this.setOutOfGround(false);
         this.sync();
     }
 

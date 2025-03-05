@@ -56,7 +56,6 @@ public class ShockwaveBlockEntity extends FallingBlockEntity implements OwnableE
                 vel,
                 owner,
                 centrePos);
-        level.setBlock(blockPos, blockState.getFluidState().createLegacyBlock(), 3);
         level.addFreshEntity(fallingBlockEntity);
         return fallingBlockEntity;
     }
