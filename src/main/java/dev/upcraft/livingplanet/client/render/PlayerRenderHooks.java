@@ -30,10 +30,6 @@ public class PlayerRenderHooks {
         var centreState = Blocks.STONE.defaultBlockState();
 
 
-        var random = new SingleThreadedRandomSource(SEED);
-        var level = player.level();
-        var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos);
-
         float ticksSinceChanged = component.ticksSinceChangedState(partialTicks);
         if (!component.isOutOfGround() && ticksSinceChanged <= 20) {
             poseStack.translate(0f, -(ticksSinceChanged/20.0)*player.getBbHeight(), 0f);
@@ -51,6 +47,10 @@ public class PlayerRenderHooks {
         } else {
             maxY = player.getBbHeight();
         }
+
+        var random = new SingleThreadedRandomSource(SEED);
+        var level = player.level();
+        var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos.above((int) maxY));
 
         for (int layerY = - 2; layerY < maxY; layerY++) {
             poseStack.pushPose();
