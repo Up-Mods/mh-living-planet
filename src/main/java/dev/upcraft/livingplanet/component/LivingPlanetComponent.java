@@ -63,6 +63,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     public void setOutOfGround(boolean visible) {
         this.outOfGround = visible;
+        this.player.refreshDimensions();
     }
 
     public boolean isOutOfGround() {
@@ -103,6 +104,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.immobilizedTicks = tag.getInt("immobilizedTicks");
         this.health = tag.getFloat("health");
         this.phasing = tag.getBoolean("phasing");
+        this.player.refreshDimensions();
     }
 
     @Override
