@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.upcraft.livingplanet.component.LPComponents;
 import dev.upcraft.livingplanet.component.LivingPlanetComponent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +18,8 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -60,6 +63,13 @@ public abstract class PlayerMixin extends LivingEntity {
         }
 
         return true;
+    }
+
+    @Inject(method = "causeFallDamage", at = @At(value = "HEAD"), cancellable = true)
+    private void lp$noFallDamage(float fallDistance, float multiplier, DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+        if (LPComponents.LIVING_PLANET.get(this).isLivingPlanet()) {
+            cir.setReturnValue(false);
+        }
     }
 
 }
