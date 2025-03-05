@@ -29,6 +29,8 @@ public class LPNetworking {
 
         registerC2S(ShockwavePacket.TYPE, ShockwavePacket.STREAM_CODEC, ShockwavePacket::handle);
 
+        registerC2S(RockThrowPacket.TYPE, RockThrowPacket.CODEC, RockThrowPacket::handle);
+
         registerC2S(TrackingRequestPacket.TYPE, TrackingRequestPacket.CODEC, TrackingRequestPacket::handle);
 
         registerS2C(TrackingResponsePacket.TYPE, TrackingResponsePacket.CODEC);

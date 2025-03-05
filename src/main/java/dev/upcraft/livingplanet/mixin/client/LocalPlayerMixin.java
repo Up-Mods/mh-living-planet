@@ -1,8 +1,10 @@
 package dev.upcraft.livingplanet.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
+import dev.upcraft.livingplanet.client.rockthrow.RockThrow;
 import dev.upcraft.livingplanet.component.LPComponents;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -26,5 +28,10 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
 
         var component = instance.getComponent(LPComponents.LIVING_PLANET);
         return !component.isLivingPlanet() || !component.isImmobilized();
+    }
+
+    @ModifyReturnValue(method = "isUsingItem", at = @At("RETURN"))
+    private boolean lp$usingRockThrow(boolean original) {
+        return original || RockThrow.isThrowing();
     }
 }

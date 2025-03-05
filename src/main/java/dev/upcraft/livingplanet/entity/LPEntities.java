@@ -15,4 +15,11 @@ public class LPEntities {
             .clientTrackingRange(10)
             .updateInterval(20)
             .build());
+
+    public static final RegistrySupplier<EntityType<ThrownRock>> THROWN_ROCK = ENTITY_TYPES.register("thrown_rock",
+            () -> EntityType.Builder.<ThrownRock>of(ThrownRock::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build());
 }

@@ -17,6 +17,7 @@
     "client.GuiMixin",
     "client.InventoryScreenMixin",
     "client.LocalPlayerMixin",
+    "client.MinecraftMixin",
     "client.PlayerRendererMixin"
   ]
 }
