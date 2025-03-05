@@ -8,7 +8,6 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.upcraft.livingplanet.component.LPComponents;
 import dev.upcraft.livingplanet.component.LivingPlanetComponent;
-import dev.upcraft.livingplanet.util.DummyFoodData;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,15 +60,6 @@ public abstract class PlayerMixin extends LivingEntity {
         }
 
         return true;
-    }
-
-    @ModifyReturnValue(method = "getFoodData", at = @At("RETURN"))
-    private FoodData lp$dummyFoodData(FoodData original) {
-        if(this.getComponent(LPComponents.LIVING_PLANET).isLivingPlanet()) {
-            return DummyFoodData.INSTANCE;
-        }
-
-        return original;
     }
 
 }

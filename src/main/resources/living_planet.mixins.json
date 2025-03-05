@@ -5,6 +5,7 @@
   "mixins": [
     "BlockStateBaseMixin",
     "EntityMixin",
+    "FoodDataMixin",
     "LivingEntityMixin",
     "PlayerMixin"
   ],
