@@ -33,9 +33,10 @@ public record RockThrowPacket(int timeHeld) implements CustomPacketPayload {
         }
 
         var player = context.player();
-        float strength = Mth.lerp(Math.clamp(timeHeld, 0, 20)/20f, 0.02f, 2.0f);
+        float strength = Mth.lerp(Math.clamp(this.timeHeld, 0, 20)/20f, 0.02f, 2.0f);
 
         var projectile = new ThrownRock(player, player.level());
+        projectile.setItem(LPComponents.LIVING_PLANET.get(context.player()).getRandomState(context.player().getRandom()::nextInt).getBlock().asItem().getDefaultInstance());
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, strength, 0.2f);
         player.level().addFreshEntity(projectile);
         player.level().playSound(

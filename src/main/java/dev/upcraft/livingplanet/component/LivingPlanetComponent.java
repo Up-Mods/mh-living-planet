@@ -118,6 +118,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     @Override
     public void serverTick() {
+        this.updateSurroundings();
         if(this.immobilizedTicks > 0) {
             this.immobilizedTicks--;
 

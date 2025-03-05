@@ -21,6 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -48,6 +49,8 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
             player.displayClientMessage(Component.translatable(COOLDOWN_MESSAGE_KEY).withStyle(ChatFormatting.RED), true);
             return;
         }
+        
+        var random = player.getRandom();
 
         var level = player.serverLevel();
 
@@ -58,40 +61,40 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
         var mutablePos = this.pos.mutable();
 
         mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(forwards);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(forwards);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(backwards);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(backwards);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         mutablePos.move(left).move(forwards);
-        throwBlock(level, mutablePos, this.pos, player);
+        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
 
         var damageSource = level.damageSources().source(LPDamageTypes.SHOCKWAVE, player);
 
@@ -118,13 +121,7 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
         entity.hurtMarked = true;
     }
 
-    private static void throwBlock(ServerLevel level, BlockPos.MutableBlockPos mutablePos, BlockPos centrePos, Player owner) {
-        for (int i = 0; i < 5; i++) {
-            if (level.getBlockState(mutablePos.above()).is(Blocks.SAND)) {
-                mutablePos.move(Direction.UP);
-            }
-        }
-        var state = level.getBlockState(mutablePos);
+    private static void throwBlock(ServerLevel level, BlockPos.MutableBlockPos mutablePos, BlockPos centrePos, BlockState state, Player owner) {
         var dir = owner.getLookAngle()
                 .with(Direction.Axis.Y, 0)
                 .normalize()
