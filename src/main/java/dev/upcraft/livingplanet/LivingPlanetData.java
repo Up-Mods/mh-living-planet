@@ -1,5 +1,7 @@
 package dev.upcraft.livingplanet;
 
+import dev.upcraft.livingplanet.client.tracking.PlayerTrackingScreen;
+import dev.upcraft.livingplanet.client.tracking.Tracker;
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
 import dev.upcraft.livingplanet.entity.LPEntities;
 import dev.upcraft.livingplanet.item.LPItems;
@@ -56,13 +58,18 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             builder.add("key.living_planet.ability_phase", "Phase Through Wall");
             builder.add("key.living_planet.ability_shockwave", "Launch Shockwave");
             builder.add("key.living_planet.toggle_form", "Emerge From Ground");
+            builder.add(Tracker.TRACKER_KEY, "Tracker");
+            builder.add(PlayerTrackingScreen.DESELECT_KEY, "Deselect");
             builder.add(LPEntities.SHOCKWAVE_BLOCK.get(), "Shockwave Block");
+            builder.add(LPEntities.THROWN_ROCK.get(), "Thrown Rock");
             builder.add(LPItems.PLAYER_TRACKER_COMPASS.get(), "Player Tracker Compass");
             builder.add(LPOptions.CATEGORY.getTranslationKey(), "Living Planet");
             builder.add(LPOptions.SHOCKWAVE_DAMAGE.getTranslationKey(), "Shockwave Damage");
             builder.add(LPOptions.SHOCKWAVE_DAMAGE.getDescriptionTranslationKey(), "How many half-hearts of damage a shockwave does.");
             builder.add(LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.getTranslationKey(), "Shockwave Cooldown (secs)");
             builder.add(LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the shockwave ability.");
+            builder.add(LPOptions.THROWN_ROCK_DAMAGE.getTranslationKey(), "Thrown Rock Damage");
+            builder.add(LPOptions.THROWN_ROCK_DAMAGE.getDescriptionTranslationKey(), "How many half-hearts of damage a thrown rock does.");
             builder.add(ShockwavePacket.COOLDOWN_MESSAGE_KEY, "This ability is cooling down.");
         }
     }

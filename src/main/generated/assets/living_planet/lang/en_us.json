@@ -2,6 +2,9 @@
   "commands.livingplanet.state.disabled": "Made %s no longer a living planet",
   "commands.livingplanet.state.enabled": "Made %s a living planet",
   "entity.living_planet.shockwave_block": "Shockwave Block",
+  "entity.living_planet.thrown_rock": "Thrown Rock",
+  "gui.living_planet.tracker": "Tracker",
+  "gui.living_planet.tracker.deselect": "Deselect",
   "item.living_planet.player_tracker_compass": "Player Tracker Compass",
   "key.category.living_planet.abilities": "[MH] Living Planet",
   "key.living_planet.ability_phase": "Phase Through Wall",
@@ -12,5 +15,7 @@
   "mvalue.living_planet.shockwave_cooldown.desc": "How many seconds a player must wait between using the shockwave ability.",
   "mvalue.living_planet.shockwave_damage": "Shockwave Damage",
   "mvalue.living_planet.shockwave_damage.desc": "How many half-hearts of damage a shockwave does.",
+  "mvalue.living_planet.thrown_rock_damage": "Thrown Rock Damage",
+  "mvalue.living_planet.thrown_rock_damage.desc": "How many half-hearts of damage a thrown rock does.",
   "mvaluecategory.living_planet.living_planet": "Living Planet"
 }

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class PlayerTrackingScreen extends Screen {
-    private static final String DESELECT_KEY = "gui.living_planet.tracker.deselect";
+    public static final String DESELECT_KEY = "gui.living_planet.tracker.deselect";
     private final Tracker tracker;
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     private PlayerTrackingList list;
