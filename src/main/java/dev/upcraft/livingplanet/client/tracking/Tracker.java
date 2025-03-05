@@ -1,25 +1,24 @@
 package dev.upcraft.livingplanet.client.tracking;
 
-import com.mojang.datafixers.util.Pair;
 import dev.upcraft.livingplanet.item.LPItems;
+import dev.upcraft.livingplanet.net.TrackingRequestPacket;
+import dev.upcraft.livingplanet.net.TrackingResponsePacket;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.CompassItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -33,61 +32,63 @@ import static dev.upcraft.livingplanet.LivingPlanet.id;
 public class Tracker {
     public static final ItemStack TRACKER_COMPASS_ITEM = LPItems.PLAYER_TRACKER_COMPASS.get().getDefaultInstance();
     public static final ResourceKey<Level> UNKNOWN = ResourceKey.create(Registries.DIMENSION, id("unknown"));
+    public static final String TRACKER_KEY = "gui.living_planet.tracker";
+    private static Tracker INSTANCE;
     @NotNull ResourceKey<Level> dimension = UNKNOWN;
-    @Nullable Pair<Vec3, Vec3> prevPosAndCurrentPos;
+    @Nullable Vec3 pos;
+    @Nullable Vec3 serverPos;
     @NotNull List<Component> messages = List.of();
     @Nullable UUID playerToTrack;
 
-    public void tick(Level level) {
-        this.prevPosAndCurrentPos = null;
-        this.messages = List.of();
-        this.dimension = UNKNOWN;
-        if (this.playerToTrack == null) {
-            return;
-        }
-        var player = level.getPlayerByUUID(this.playerToTrack);
-        if (player != null) {
-            var pos = player.position();
-            var prevPos = this.prevPosAndCurrentPos == null || this.prevPosAndCurrentPos.getSecond() == null ? pos : this.prevPosAndCurrentPos.getSecond();
-            this.prevPosAndCurrentPos = Pair.of(prevPos, pos);
-            var name = player.getDisplayName();
-            if (name == null) {
-                name = Component.empty();
-            }
-            var dist = pos.distanceTo(player.position());
-            var distMessage = Component.literal("%.0f Blocks".formatted(dist));
-            this.messages = List.of(name, distMessage);
-            this.dimension = level.dimension();
-        } else {
-            this.messages = List.of(Component.literal("???"), Component.literal("??? Blocks"));
-            this.dimension = UNKNOWN;
-        }
+    public void track(UUID uuid) {
+        this.playerToTrack = uuid;
     }
 
-    private @Nullable Vec3 pos(float partialTicks) {
-        return this.prevPosAndCurrentPos == null ? null : this.prevPosAndCurrentPos.getFirst().lerp(this.prevPosAndCurrentPos.getSecond(), partialTicks);
+    public void tick(Level level) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (this.playerToTrack == null || player == null) {
+            return;
+        }
+        var playerInfo = player.connection.getPlayerInfo(this.playerToTrack);
+        var tracked = level.getPlayerByUUID(this.playerToTrack);
+        if (tracked == null) {
+            ClientPlayNetworking.send(new TrackingRequestPacket(this.playerToTrack));
+            this.pos = this.serverPos;
+        } else {
+            this.pos = tracked.position();
+            this.dimension = level.dimension();
+        }
+        var name = playerInfo == null ? Component.literal("???") : playerInfo.getTabListDisplayName() == null ? Component.literal(playerInfo.getProfile().getName()) : playerInfo.getTabListDisplayName();
+        var dist = this.pos == null || this.dimension != level.dimension() ? Double.NaN : this.pos.distanceTo(player.position());
+        var distMessage = dist != dist ? Component.literal("??? Blocks") : Component.literal("%.0f Blocks".formatted(dist));
+        this.messages = List.of(name, distMessage);
     }
 
     private void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        var pos = this.pos(deltaTracker.getGameTimeDeltaPartialTick(true));
-        if (pos == null) {
-            return;
-        }
+        if (this.playerToTrack != null) {
+            for (int i = 0; i < this.messages.size(); i++) {
+                guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.messages.get(i), guiGraphics.guiWidth() / 2, guiGraphics.guiHeight() - 38 - i * 10, -1);
+            }
 
-        for (int i = 0; i < this.messages.size(); i++) {
-            guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.messages.get(i), guiGraphics.guiWidth()/2, guiGraphics.guiHeight() - 38 - i*10, -1);
+            guiGraphics.renderItem(TRACKER_COMPASS_ITEM, guiGraphics.guiWidth() / 2 - 8, guiGraphics.guiHeight() - 66);
         }
-
-        guiGraphics.renderFakeItem(TRACKER_COMPASS_ITEM, guiGraphics.guiWidth()/2 - 8, guiGraphics.guiHeight() - 66);
     }
 
     public static void init() {
-        var tracker = new Tracker();
+        var tracker = INSTANCE = new Tracker();
         ClientTickEvents.START_WORLD_TICK.register(tracker::tick);
         HudRenderCallback.EVENT.register(tracker::render);
         ItemProperties.register(LPItems.PLAYER_TRACKER_COMPASS.get(), id("angle"), new CompassItemPropertyFunction(
-                (clientLevel, itemStack, entity) -> tracker.prevPosAndCurrentPos == null
+                (clientLevel, itemStack, entity) -> tracker.pos == null
                         ? null
-                        : GlobalPos.of(tracker.dimension, BlockPos.containing(tracker.prevPosAndCurrentPos.getSecond()))));
+                        : GlobalPos.of(tracker.dimension, BlockPos.containing(tracker.pos))));
+        ClientPlayNetworking.registerGlobalReceiver(TrackingResponsePacket.TYPE, (payload, context) -> {
+            tracker.serverPos = payload.position();
+            tracker.dimension = payload.dimension();
+        });
+    }
+
+    public static void onButtonPress(Button button) {
+        Minecraft.getInstance().setScreen(new PlayerTrackingScreen(Component.translatable(TRACKER_KEY), INSTANCE));
     }
 }

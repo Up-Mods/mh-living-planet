@@ -15,6 +15,7 @@
     "client.CameraMixin",
     "client.EntityRenderDispatcherMixin",
     "client.GuiMixin",
+    "client.InventoryScreenMixin",
     "client.LocalPlayerMixin",
     "client.PlayerRendererMixin"
   ]

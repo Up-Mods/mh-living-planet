@@ -28,6 +28,14 @@ public class LPNetworking {
         });
 
         registerC2S(ShockwavePacket.TYPE, ShockwavePacket.STREAM_CODEC, ShockwavePacket::handle);
+
+        registerC2S(TrackingRequestPacket.TYPE, TrackingRequestPacket.CODEC, TrackingRequestPacket::handle);
+
+        registerS2C(TrackingResponsePacket.TYPE, TrackingResponsePacket.CODEC);
+    }
+
+    private static <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
+        PayloadTypeRegistry.playS2C().register(type, codec);
     }
 
     private static <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, ServerPlayNetworking.PlayPayloadHandler<T> handler) {
