@@ -3,6 +3,8 @@ package dev.upcraft.livingplanet.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.upcraft.livingplanet.client.rockthrow.RockThrow;
+import dev.upcraft.livingplanet.component.LPComponents;
+import dev.upcraft.livingplanet.component.LivingPlanetComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Objects;
@@ -44,6 +47,14 @@ public class MinecraftMixin {
             RockThrow.stop(Objects.requireNonNull(this.level));
         } else {
             original.call(instance, player);
+        }
+    }
+
+    @Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isHandsBusy()Z"), cancellable = true)
+    private void lp$noAttacking(CallbackInfoReturnable<Boolean> cir) {
+        LivingPlanetComponent cmp = LPComponents.LIVING_PLANET.get(Objects.requireNonNull(this.player));
+        if (cmp.isLivingPlanet() && !cmp.isOutOfGround()) {
+            cir.setReturnValue(false);
         }
     }
 }
