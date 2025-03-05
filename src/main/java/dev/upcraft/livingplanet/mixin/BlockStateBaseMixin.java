@@ -23,9 +23,12 @@ public class BlockStateBaseMixin {
         var orig = original.call(instance, state, blockGetter, blockPos, collisionContext);
         if (collisionContext instanceof EntityCollisionContext entityCollisionContext
                 && entityCollisionContext.getEntity() instanceof Player player
-                && LPComponents.LIVING_PLANET.get(player).isPhasing()
-                && !collisionContext.isAbove(orig, blockPos, true)) {
-            return Shapes.empty();
+                && LPComponents.LIVING_PLANET.get(player).isPhasing()) {
+            if (!collisionContext.isAbove(orig, blockPos, true)) {
+                return Shapes.empty();
+            } else if (player.isShiftKeyDown() && collisionContext.isAbove(orig, blockPos, true)) {
+                return Shapes.empty();
+            }
         }
         return orig;
     }
