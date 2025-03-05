@@ -15,7 +15,7 @@ public class EntityRenderDispatcherMixin {
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void planetlordbiomes$desert$dontRenderBurrowed(E entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
         LivingPlanetComponent cmp = LPComponents.LIVING_PLANET.getNullable(entity);
-        if (cmp != null && !cmp.isOutOfGround() && cmp.ticksSinceChangedState(0) > 10) {
+        if (cmp != null && cmp.isLivingPlanet() && !cmp.isOutOfGround() && cmp.ticksSinceChangedState(0) > 10) {
             cir.setReturnValue(false);
         }
     }
