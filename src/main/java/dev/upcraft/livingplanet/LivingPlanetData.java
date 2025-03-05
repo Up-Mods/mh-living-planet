@@ -2,6 +2,7 @@ package dev.upcraft.livingplanet;
 
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
 import dev.upcraft.livingplanet.entity.LPEntities;
+import dev.upcraft.livingplanet.item.LPItems;
 import dev.upcraft.livingplanet.net.ShockwavePacket;
 import dev.upcraft.livingplanet.tag.LPTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
@@ -9,18 +10,27 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.models.BlockModelGenerators;
+import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.models.model.ModelLocationUtils;
+import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class LivingPlanetData implements DataGeneratorEntrypoint {
@@ -47,6 +57,7 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             builder.add("key.living_planet.ability_shockwave", "Launch Shockwave");
             builder.add("key.living_planet.toggle_form", "Emerge From Ground");
             builder.add(LPEntities.SHOCKWAVE_BLOCK.get(), "Shockwave Block");
+            builder.add(LPItems.PLAYER_TRACKER_COMPASS.get(), "Player Tracker Compass");
             builder.add(LPOptions.CATEGORY.getTranslationKey(), "Living Planet");
             builder.add(LPOptions.SHOCKWAVE_DAMAGE.getTranslationKey(), "Shockwave Damage");
             builder.add(LPOptions.SHOCKWAVE_DAMAGE.getDescriptionTranslationKey(), "How many half-hearts of damage a shockwave does.");

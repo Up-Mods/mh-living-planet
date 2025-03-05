@@ -15,7 +15,7 @@ public class LivingEntityMixin {
     @Inject(method = "maxUpStep", at = @At("HEAD"), cancellable = true)
     private void planetlordbiomes$desert$stepUpOne(CallbackInfoReturnable<Float> cir) {
         if (LPComponents.LIVING_PLANET.maybeGet(this).filter(Predicate.not(LivingPlanetComponent::isOutOfGround)).isPresent()) {
-            cir.setReturnValue(1f);
+            cir.setReturnValue(4f);
         }
     }
 }

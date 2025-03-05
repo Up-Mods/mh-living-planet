@@ -2,6 +2,7 @@ package dev.upcraft.livingplanet;
 
 import dev.upcraft.livingplanet.command.LPCommands;
 import dev.upcraft.livingplanet.entity.LPEntities;
+import dev.upcraft.livingplanet.item.LPItems;
 import dev.upcraft.livingplanet.net.LPNetworking;
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.livingplanet.tag.LPTags;
@@ -23,6 +24,7 @@ public class LivingPlanet implements MainEntryPoint {
 		LPCommands.register();
 		LPEntities.ENTITY_TYPES.accept(registryService);
 		LPParticles.PARTICLE_TYPES.accept(registryService);
+		LPItems.ITEMS.accept(registryService);
 		LPNetworking.init();
 		LPTags.init();
 		LPOptions.init();

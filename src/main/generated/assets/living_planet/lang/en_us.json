@@ -2,6 +2,7 @@
   "commands.livingplanet.state.disabled": "Made %s no longer a living planet",
   "commands.livingplanet.state.enabled": "Made %s a living planet",
   "entity.living_planet.shockwave_block": "Shockwave Block",
+  "item.living_planet.player_tracker_compass": "Player Tracker Compass",
   "key.category.living_planet.abilities": "[MH] Living Planet",
   "key.living_planet.ability_phase": "Phase Through Wall",
   "key.living_planet.ability_shockwave": "Launch Shockwave",

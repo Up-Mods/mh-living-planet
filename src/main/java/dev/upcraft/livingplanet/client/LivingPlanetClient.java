@@ -1,6 +1,7 @@
 package dev.upcraft.livingplanet.client;
 
 import dev.upcraft.livingplanet.client.render.ShockwaveBlockRenderer;
+import dev.upcraft.livingplanet.client.tracking.Tracker;
 import dev.upcraft.livingplanet.entity.LPEntities;
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.sparkweave.api.client.event.RegisterEntityRenderersEvent;
@@ -16,5 +17,6 @@ public class LivingPlanetClient implements ClientEntryPoint {
         ClientTickEvents.START_CLIENT_TICK.register(LPKeybinds::tickKeyMappings);
         RegisterEntityRenderersEvent.EVENT.register(event -> event.registerRenderer(LPEntities.SHOCKWAVE_BLOCK, ShockwaveBlockRenderer::new));
         ParticleFactoryRegistry.getInstance().register(LPParticles.BIG_TERRAIN_PARTICLE.get(), new BigTerrainParticle.Provider());
+        Tracker.init();
     }
 }
