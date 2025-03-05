@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
-
     private PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
         throw new UnsupportedOperationException();
@@ -32,10 +31,10 @@ public abstract class PlayerMixin extends LivingEntity {
         var planet = this.getComponent(LPComponents.LIVING_PLANET);
         if(planet.isLivingPlanet()) {
             if(!planet.isOutOfGround()) {
-                return EntityDimensions.fixed(0.25F, 0.25F);
+                return LivingPlanetComponent.IN_GROUND_DIMENSIONS;
             }
             else {
-                return EntityDimensions.fixed(2.0F, 3.0F);
+                return LivingPlanetComponent.OUT_OF_GROUND_DIMENSIONS;
             }
         }
 

@@ -13,6 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -33,35 +34,50 @@ public class PlayerRenderHooks {
         var level = player.level();
         var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos);
 
-        if(component.isOutOfGround()) {
-            double maxY = player.getBoundingBox().maxY - player.getY();
-            for (int layerY = - 2; layerY < maxY; layerY++) {
+        float ticksSinceChanged = component.ticksSinceChangedState(partialTicks);
+        if (!component.isOutOfGround() && ticksSinceChanged <= 20) {
+            poseStack.translate(0f, -(ticksSinceChanged/20.0)*player.getBbHeight(), 0f);
+        }
+        double maxY;
+        if (ticksSinceChanged <= 10) {
+            double factor = (ticksSinceChanged/10.0);
+            if (component.isOutOfGround()) {
+                factor = 1-factor;
+            }
+            maxY = LivingPlanetComponent.OUT_OF_GROUND_DIMENSIONS.scale(
+                    1f,
+                    (float) Mth.lerp(factor, 1f, LivingPlanetComponent.IN_GROUND_DIMENSIONS.height()/LivingPlanetComponent.OUT_OF_GROUND_DIMENSIONS.height()))
+                    .height();
+        } else {
+            maxY = player.getBbHeight();
+        }
+
+        for (int layerY = - 2; layerY < maxY; layerY++) {
+            poseStack.pushPose();
+            poseStack.translate(-0.5F, 0.0F, -0.5F);
+            renderBlockAt(new Vector3f(0, layerY, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
+            poseStack.popPose();
+            double distanceFromTop = (maxY - layerY)/3.0;
+            double displacement = distanceFromTop*distanceFromTop;
+            int baseInstances = Math.max((int) (Math.PI * displacement * 4), 4);
+            for (int instance = 0; instance < baseInstances; instance++) {
                 poseStack.pushPose();
-                poseStack.translate(-0.5F, 0.0F, -0.5F);
-                renderBlockAt(new Vector3f(0, layerY, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                poseStack.translate(0, layerY, displacement);
+                poseStack.rotateAround(Axis.YP.rotation((float) (((float) instance /baseInstances)*Math.PI*2)), 0, 0, (float) -displacement);
+                poseStack.mulPose(Axis.XP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
+                renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                 poseStack.popPose();
-                double distanceFromTop = (maxY - layerY)/3.0;
-                double displacement = distanceFromTop*distanceFromTop;
-                int baseInstances = Math.max((int) (Math.PI * displacement * 4), 4);
-                for (int instance = 0; instance < baseInstances; instance++) {
-                    poseStack.pushPose();
-                    poseStack.translate(0, layerY, displacement);
-                    poseStack.rotateAround(Axis.YP.rotation((float) (((float) instance /baseInstances)*Math.PI*2)), 0, 0, (float) -displacement);
-                    poseStack.mulPose(Axis.XP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
-                    poseStack.popPose();
-                }
-                int stickingOutInstances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
-                for (int instance = 0; instance < stickingOutInstances; instance++) {
-                    double z = displacement*(0.2+random.nextFloat()*0.8);
-                    double y = layerY+random.nextDouble()*0.75;
-                    poseStack.pushPose();
-                    poseStack.translate(0, y, z);
-                    poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
-                    poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                    renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
-                    poseStack.popPose();
-                }
+            }
+            int stickingOutInstances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
+            for (int instance = 0; instance < stickingOutInstances; instance++) {
+                double z = displacement*(0.2+random.nextFloat()*0.8);
+                double y = layerY+random.nextDouble()*0.75;
+                poseStack.pushPose();
+                poseStack.translate(0, y, z);
+                poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
+                poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
+                renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                poseStack.popPose();
             }
         }
 

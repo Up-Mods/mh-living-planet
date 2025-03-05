@@ -12,7 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -30,6 +32,8 @@ import java.util.function.IntUnaryOperator;
 
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 
+    public static final EntityDimensions IN_GROUND_DIMENSIONS = EntityDimensions.fixed(0.25F, 0.25F);
+    public static final EntityDimensions OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(4.0F, 7.0F);
     private static final int DEFAULT_IMMOBILIZED_TIME = 20 * 120;
     private static final int DEFAULT_SHOCKWAVE_COOLDOWN = 20 * 120;
     private static final float MAX_HEALTH = 100.0F;
@@ -51,6 +55,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     private float health;
     private boolean phasing = false;
+    private long timeChangedState = -1;
 
     public LivingPlanetComponent(Player player) {
         this.player = player;
@@ -130,12 +135,15 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void clientTick() {
         this.updateSurroundings();
-        if (this.isOutOfGround()) {
+        float ticksSinceChangedState = this.ticksSinceChangedState(0f);
+        boolean isChanging = ticksSinceChangedState <= 10;
+        if (this.isOutOfGround() || isChanging) {
             var random = this.player.getRandom();
+            double height = isChanging ? Mth.lerp(this.isOutOfGround() ? (1f-(ticksSinceChangedState/10)) : (ticksSinceChangedState/10), OUT_OF_GROUND_DIMENSIONS.height(), IN_GROUND_DIMENSIONS.height()) : this.player.getBbHeight();
             for (int i = 0; i < 20; i++) {
                 var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), this.getRandomState(random::nextInt), this.player.getId());
-                double y = 0.3+random.nextGaussian()*Math.min(1, this.player.getBbHeight());
-                double yDist = (this.player.getBbHeight()-y)/3.0;
+                double y = 0.3+random.nextGaussian()*(isChanging ? height : Math.min(1, height));
+                double yDist = (height-y)/3.0;
                 double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
                 double theta = random.nextGaussian()*Math.PI*2;
                 Vec3 pos = this.player.position().add(Math.sin(theta)*displacement, y, Math.cos(theta)*displacement);
@@ -156,6 +164,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     @Override
     public void applySyncPacket(RegistryFriendlyByteBuf buf) {
+        boolean wasOutOfGround = this.isOutOfGround();
         this.livingPlanet = ByteBufCodecs.BOOL.decode(buf);
         this.outOfGround = ByteBufCodecs.BOOL.decode(buf);
         this.shockwaveCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
@@ -163,6 +172,9 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.health = ByteBufCodecs.FLOAT.decode(buf);
         this.phasing = ByteBufCodecs.BOOL.decode(buf);
         this.player.refreshDimensions();
+        if (wasOutOfGround != this.outOfGround) {
+            this.timeChangedState = this.player.level().getGameTime();
+        }
     }
 
     public void setImmobilized() {
@@ -263,5 +275,9 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                 this.effectiveSurroundings.add(entry.getKey());
             }
         }
+    }
+
+    public float ticksSinceChangedState(float partialTick) {
+        return (float) ((this.player.level().getGameTime() + (double) partialTick) - this.timeChangedState);
     }
 }
