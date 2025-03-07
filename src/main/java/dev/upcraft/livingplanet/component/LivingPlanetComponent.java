@@ -5,9 +5,12 @@ import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.livingplanet.particle.LivingPlanetTerrainParticleOption;
 import dev.upcraft.livingplanet.tag.LPTags;
 import dev.upcraft.livingplanet.util.SurroundingBlockType;
+import dev.upcraft.livingplanet.util.Wave;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,6 +31,7 @@ import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
@@ -56,6 +60,8 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     private float health;
     private boolean phasing = false;
     private long timeChangedState = -1;
+
+    private final Deque<Wave> waves = new ArrayDeque<>();
 
     public LivingPlanetComponent(Player player) {
         this.player = player;
@@ -141,17 +147,46 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         float ticksSinceChangedState = this.ticksSinceChangedState(0f);
         boolean isChanging = ticksSinceChangedState <= 10;
         if (this.isOutOfGround() || isChanging) {
-            var random = this.player.getRandom();
-            double height = isChanging ? Mth.lerp(this.isOutOfGround() ? (1f-(ticksSinceChangedState/10)) : (ticksSinceChangedState/10), OUT_OF_GROUND_DIMENSIONS.height(), IN_GROUND_DIMENSIONS.height()) : this.player.getBbHeight();
-            for (int i = 0; i < 20; i++) {
-                var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), this.getRandomState(random::nextInt), this.player.getId());
-                double y = 0.3+random.nextGaussian()*(isChanging ? height : Math.min(1, height));
-                double yDist = (height-y)/3.0;
-                double displacement = yDist*yDist*(0.2+random.nextFloat()*0.8)+1;
-                double theta = random.nextGaussian()*Math.PI*2;
-                Vec3 pos = this.player.position().add(Math.sin(theta)*displacement, y, Math.cos(theta)*displacement);
-                this.player.level().addParticle(particle, pos.x(), pos.y(), pos.z(), 0.0D, 0.0D, 0.0D);
+            var random = this.player.level().getRandom();
+            //this.makeParticles(isChanging, ticksSinceChangedState, r -> r.nextDouble()*Math.PI*2, r -> (0.2+ r.nextFloat()*0.8)+1 random);
+
+            long time = this.player.level().getGameTime();
+
+            while (this.waves.peek() != null && time - this.waves.peek().timeStarted() > Wave.LIFETIME) {
+                this.waves.poll();
             }
+
+            Vec3 deltaMovement = this.player.getDeltaMovement().multiply(1.0, 0.0, 1.0);
+            if (deltaMovement.length() > 0.01) {
+                float angle = (float) Math.atan2(deltaMovement.z(), -deltaMovement.x());
+                if (this.waves.isEmpty() || (time - this.waves.getLast().timeStarted() > 7)) {
+                    this.waves.add(new Wave(time, angle));
+                }
+                this.makeParticles(isChanging, ticksSinceChangedState, r -> r.nextGaussian()*0.45 + (Math.PI*3/2 +angle), r -> 2.0, random);
+            }
+        }
+    }
+
+    private void makeParticles(boolean isChanging, float ticksSinceChangedState, Function<RandomSource, Double> thetaGenerator, Function<RandomSource, Double> displacementFactorGenerator, RandomSource random) {
+        double height = isChanging ? Mth.lerp(this.isOutOfGround() ? (1f-(ticksSinceChangedState /10)) : (ticksSinceChangedState /10), OUT_OF_GROUND_DIMENSIONS.height(), IN_GROUND_DIMENSIONS.height()) : this.player.getBbHeight();
+        for (int i = 0; i < 20; i++) {
+            var particle = new LivingPlanetTerrainParticleOption(LPParticles.BIG_TERRAIN_PARTICLE.get(), this.getRandomState(random::nextInt), this.player.getId());
+            double y = -4.0 + random.nextDouble()*(isChanging ? height+4 : Math.min(6, height+4));
+            double yDist = (height-y)/3.0;
+            double displacement = yDist*yDist*displacementFactorGenerator.apply(random);
+            double theta = thetaGenerator.apply(random);
+            Vec3 pos = this.player.position().add(Math.sin(theta)*displacement, Math.max(y, 0.0), Math.cos(theta)*displacement);
+            if (y <= 0) {
+                for (int j = 0; j < 3; j++) {
+                    if (this.player.level().isEmptyBlock(BlockPos.containing(pos))) {
+                        pos = pos.subtract(0.0, 1.0, 0.0);
+                    } else {
+                        pos = pos.with(Direction.Axis.Y, Math.ceil(pos.y()));
+                        break;
+                    }
+                }
+            }
+            this.player.level().addParticle(particle, pos.x(), pos.y(), pos.z(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -227,8 +262,8 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     private final Map<SurroundingBlockType, Integer> surroundings = new HashMap<>();
-    private final Set<SurroundingBlockType> effectiveSurroundings = new HashSet<>();
 
+    private final Set<SurroundingBlockType> effectiveSurroundings = new HashSet<>();
     public BlockState getRandomState(IntUnaryOperator random) {
         if (this.effectiveSurroundings.isEmpty()) {
             random.applyAsInt(1);
@@ -257,7 +292,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                 this.player.getBlockY() - 5,
                 this.player.getBlockZ() + 10,
                 this.player.getBlockX() + 10,
-                this.player.getBlockY() + 0,
+                this.player.getBlockY(),
                 this.player.getBlockZ() + 10)) {
             var state = level.getBlockState(surroundingPos);
             if (!state.is(LPTags.LIVING_PLANET_BLOCKS) || !state.isCollisionShapeFullBlock(level, surroundingPos)) {
@@ -279,6 +314,10 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                 this.effectiveSurroundings.add(entry.getKey());
             }
         }
+    }
+
+    public Deque<Wave> getWaves() {
+        return this.waves;
     }
 
     public float ticksSinceChangedState(float partialTick) {

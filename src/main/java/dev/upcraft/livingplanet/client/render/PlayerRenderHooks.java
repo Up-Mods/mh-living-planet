@@ -3,6 +3,7 @@ package dev.upcraft.livingplanet.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.upcraft.livingplanet.component.LivingPlanetComponent;
+import dev.upcraft.livingplanet.util.Wave;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -10,12 +11,17 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+
+import java.util.Arrays;
+import java.util.Deque;
 
 public class PlayerRenderHooks {
     public static final int SEED = 1342347;
@@ -23,12 +29,6 @@ public class PlayerRenderHooks {
     public static void renderPlayer(AbstractClientPlayer player, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, LivingPlanetComponent component, float partialTicks) {
         poseStack.pushPose();
         var pos = player.blockPosition();
-        var yRot = Mth.lerp(partialTicks, player.yHeadRotO, player.yHeadRot);
-        //poseStack.mulPose(Axis.YP.rotationDegrees(-yRot));
-        var states = new BlockState[] {Blocks.DIRT.defaultBlockState(), Blocks.GRASS_BLOCK.defaultBlockState()};
-        var stickingOutStates = new BlockState[] {Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.GRASS_BLOCK.defaultBlockState()};
-        var centreState = Blocks.STONE.defaultBlockState();
-
 
         float ticksSinceChanged = component.ticksSinceChangedState(partialTicks);
         if (!component.isOutOfGround() && ticksSinceChanged <= 20) {
@@ -52,6 +52,8 @@ public class PlayerRenderHooks {
         var level = player.level();
         var levelHack = new PinnedBrightnessBlockAndTintGetter(level, pos.above((int) maxY));
 
+        var waves = component.getWaves();
+
         for (int layerY = - 2; layerY < maxY; layerY++) {
             poseStack.pushPose();
             poseStack.translate(-0.5F, 0.0F, -0.5F);
@@ -63,9 +65,11 @@ public class PlayerRenderHooks {
             for (int instance = 0; instance < baseInstances; instance++) {
                 poseStack.pushPose();
                 poseStack.translate(0, layerY, displacement);
-                poseStack.rotateAround(Axis.YP.rotation((float) (((float) instance /baseInstances)*Math.PI*2)), 0, 0, (float) -displacement);
+                float angle = (float) (((float) instance / baseInstances) * Math.PI * 2);
+                poseStack.rotateAround(Axis.YP.rotation(angle), 0, 0, (float) -displacement);
                 poseStack.mulPose(Axis.XP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                double height = getWaveHeight(partialTicks, waves, level, (float) displacement, angle);
+                renderBlockAt(new Vector3f(0, (float) height, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                 poseStack.popPose();
             }
             int stickingOutInstances = (int) Math.ceil(Math.PI * displacement * random.nextDouble() * 4);
@@ -74,14 +78,31 @@ public class PlayerRenderHooks {
                 double y = layerY+random.nextDouble()*0.75;
                 poseStack.pushPose();
                 poseStack.translate(0, y, z);
-                poseStack.rotateAround(Axis.YP.rotation((float) (random.nextFloat()*Math.PI*6)), 0, 0, (float) -z);
+                float angle = (float) (random.nextFloat() * Math.PI * 6);
+                poseStack.rotateAround(Axis.YP.rotation(angle), 0, 0, (float) -z);
                 poseStack.mulPose(Axis.ZP.rotation((float) (random.nextFloat()*Math.PI*0.5)));
-                renderBlockAt(new Vector3f(0, 0, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
+                double height = getWaveHeight(partialTicks, waves, level, (float) displacement, angle);
+                renderBlockAt(new Vector3f(0, (float) height, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
                 poseStack.popPose();
             }
         }
 
         poseStack.popPose();
+    }
+
+    private static double getWaveHeight(float partialTicks, Deque<Wave> waves, Level level, float displacement, float angle) {
+        double height = 0.0;
+        for (var wave : waves) {
+            double waveTime = (level.getGameTime() - (wave.timeStarted() - partialTicks))/Wave.LIFETIME;
+            double distanceOnWavefront = Math.abs(new Vector3f(0, 0, displacement)
+                    .rotateY(angle)
+                    .rotateY(-wave.angle())
+                    .x() - (waveTime*Wave.LENGTH - Wave.LENGTH/2));
+            double heightForWave = Math.exp(-Math.PI * distanceOnWavefront * distanceOnWavefront / 7.0);
+            double strength = Math.pow((1.0-waveTime), 4);
+            height += heightForWave*strength;
+        }
+        return height;
     }
 
     private static void renderBlockAt(Vector3fc offset, BlockState state, PoseStack poseStack, MultiBufferSource buffer, BlockRenderDispatcher blockRenderDispatcher, PinnedBrightnessBlockAndTintGetter levelHack, AbstractClientPlayer player) {
