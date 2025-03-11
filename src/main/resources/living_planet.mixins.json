@@ -6,7 +6,6 @@
     "BlockStateBaseMixin",
     "EntityMixin",
     "FoodDataMixin",
-    "LivingEntityMixin",
     "PlayerMixin"
   ],
   "injectors": {

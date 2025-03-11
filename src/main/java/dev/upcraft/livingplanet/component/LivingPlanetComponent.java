@@ -10,14 +10,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -34,8 +36,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 
-public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
+import static dev.upcraft.livingplanet.LivingPlanet.id;
 
+public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
+    public static final ResourceLocation STEP_HEIGHT_BOOST_ID = id("step_height_boost");
     public static final EntityDimensions IN_GROUND_DIMENSIONS = EntityDimensions.fixed(0.25F, 0.25F);
     public static final EntityDimensions OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(4.0F, 7.0F);
     private static final int DEFAULT_IMMOBILIZED_TIME = 20 * 120;
@@ -69,7 +73,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     public void setOutOfGround(boolean visible) {
         this.outOfGround = visible;
-        this.player.refreshDimensions();
+        this.updatePlayerState();
     }
 
     public boolean isOutOfGround() {
@@ -103,6 +107,18 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         return MAX_HEALTH;
     }
 
+    private void updatePlayerState() {
+        this.player.refreshDimensions();
+        var attr = this.player.getAttribute(Attributes.STEP_HEIGHT);
+        if (attr != null) {
+            if (this.livingPlanet) {
+                attr.addOrUpdateTransientModifier(new AttributeModifier(STEP_HEIGHT_BOOST_ID, 5.0, AttributeModifier.Operation.ADD_VALUE));
+            } else {
+                attr.removeModifier(STEP_HEIGHT_BOOST_ID);
+            }
+        }
+    }
+
     @Override
     public void readFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         this.livingPlanet = tag.getBoolean("active");
@@ -110,7 +126,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.immobilizedTicks = tag.getInt("immobilizedTicks");
         this.health = tag.getFloat("health");
         this.phasing = tag.getBoolean("phasing");
-        this.player.refreshDimensions();
+        this.updatePlayerState();
     }
 
     @Override
@@ -209,7 +225,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.immobilizedTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.health = ByteBufCodecs.FLOAT.decode(buf);
         this.phasing = ByteBufCodecs.BOOL.decode(buf);
-        this.player.refreshDimensions();
+        this.updatePlayerState();
         if (wasOutOfGround != this.outOfGround) {
             this.timeChangedState = this.player.level().getGameTime();
         }
