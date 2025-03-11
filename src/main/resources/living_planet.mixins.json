@@ -18,6 +18,7 @@
     "client.InventoryScreenMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
-    "client.PlayerRendererMixin"
+    "client.PlayerRendererMixin",
+    "client.ScreenEffectRendererMixin"
   ]
 }
