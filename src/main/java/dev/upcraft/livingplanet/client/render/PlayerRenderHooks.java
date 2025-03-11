@@ -59,7 +59,7 @@ public class PlayerRenderHooks {
             poseStack.translate(-0.5F, 0.0F, -0.5F);
             renderBlockAt(new Vector3f(0, layerY, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
             poseStack.popPose();
-            double distanceFromTop = (maxY - layerY)/3.0;
+            double distanceFromTop = Math.min((maxY - layerY), maxY)/3.0;
             double displacement = distanceFromTop*distanceFromTop;
             int baseInstances = Math.max((int) (Math.PI * displacement * 4), 4);
             for (int instance = 0; instance < baseInstances; instance++) {
