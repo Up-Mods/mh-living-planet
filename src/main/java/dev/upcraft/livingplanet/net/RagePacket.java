@@ -45,7 +45,7 @@ public record RagePacket() implements CustomPacketPayload {
         }
 
         level.getEntities(player, new AABB(player.position().subtract(RADIUS, RADIUS, RADIUS), player.position().add(RADIUS, RADIUS, RADIUS)), e -> e instanceof Mob).forEach(e -> enrage(e, player));
-        //TODO
+        cooldowns.onRage();
     }
 
     private static void enrage(Entity entity, Player player) {
@@ -53,7 +53,7 @@ public record RagePacket() implements CustomPacketPayload {
             return;
         }
 
-        mob.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(mob, Player.class, false, p -> true || p != player));
-        mob.goalSelector.addGoal(0, new MeleeAttackGoal(mob, 1.4, true));
+        mob.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(mob, Player.class, false, p -> p != player));
+        mob.goalSelector.addGoal(0, new MeleeAttackGoal(mob, 2.0, true));
     }
 }

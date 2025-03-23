@@ -340,7 +340,6 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     public void onRage() {
         this.rageCooldownTicks = LPOptions.RAGE_COOLDOWN_SECONDS.get()*20;
-        this.setOutOfGround(false);
         this.sync();
     }
 

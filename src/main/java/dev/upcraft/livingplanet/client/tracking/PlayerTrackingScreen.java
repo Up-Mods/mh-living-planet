@@ -37,21 +37,24 @@ public class PlayerTrackingScreen extends Screen {
                 .width(80)
                 .build());
         var component = this.minecraft.player.getComponent(LPComponents.LIVING_PLANET);
-        var lightningButton = footer.addChild(Button.builder(Component.translatable(LIGHTNING_KEY), button -> ClientPlayNetworking.send(new LightningPacket()))
+        var lightningButton = footer.addChild(Button.builder(Component.translatable(LIGHTNING_KEY), button -> {
+            ClientPlayNetworking.send(new LightningPacket());
+            this.onClose();
+                })
                 .width(80)
                 .build());
         if (!component.canLightning()) {
             lightningButton.active = false;
             lightningButton.setTooltip(Tooltip.create(Component.translatable(ShockwavePacket.COOLDOWN_MESSAGE_KEY)));
         }
-        var rageButton = footer.addChild(Button.builder(Component.translatable(RAGE_KEY), button -> ClientPlayNetworking.send(new RagePacket()))
+        var rageButton = footer.addChild(Button.builder(Component.translatable(RAGE_KEY), button -> {ClientPlayNetworking.send(new RagePacket()); this.onClose();})
                 .width(80)
                 .build());
         if (!component.canRage()) {
             rageButton.active = false;
             rageButton.setTooltip(Tooltip.create(Component.translatable(ShockwavePacket.COOLDOWN_MESSAGE_KEY)));
         }
-        var chasmsButton = footer.addChild(Button.builder(Component.translatable(CHASMS_KEY), button -> ClientPlayNetworking.send(new ChasmsPacket()))
+        var chasmsButton = footer.addChild(Button.builder(Component.translatable(CHASMS_KEY), button -> {ClientPlayNetworking.send(new ChasmsPacket()); this.onClose();})
                 .width(80)
                 .build());
         if (!component.canChasms()) {
