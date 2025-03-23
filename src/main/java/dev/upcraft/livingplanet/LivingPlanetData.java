@@ -70,6 +70,24 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             builder.add(LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the shockwave ability.");
             builder.add(LPOptions.THROWN_ROCK_DAMAGE.getTranslationKey(), "Thrown Rock Damage");
             builder.add(LPOptions.THROWN_ROCK_DAMAGE.getDescriptionTranslationKey(), "How many half-hearts of damage a thrown rock does.");
+            builder.add(LPOptions.NATURAL_DISASTERS_CATEGORY.getTranslationKey(), "Natural Disasters");
+            builder.add(LPOptions.CHASMS_COOLDOWN_SECONDS.getTranslationKey(), "Earthquakes Cooldown (secs)");
+            builder.add(LPOptions.CHASMS_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the earthquakes ability");
+            builder.add(LPOptions.EARTHQUAKE_MIN_HOLE_COUNT.getTranslationKey(), "Earthquake Min Chasms");
+            builder.add(LPOptions.EARTHQUAKE_MIN_HOLE_COUNT.getDescriptionTranslationKey(), "Earthquake Min Chasms");
+            builder.add(LPOptions.EARTHQUAKE_MAX_HOLE_COUNT.getTranslationKey(), "Earthquake Max Chasms");
+            builder.add(LPOptions.EARTHQUAKE_MAX_HOLE_COUNT.getDescriptionTranslationKey(), "Earthquake Max Chasms");
+            builder.add(LPOptions.LIGHTNING_COOLDOWN_SECONDS.getTranslationKey(), "Storm Cooldown (secs)");
+            builder.add(LPOptions.LIGHTNING_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the storm ability");
+            builder.add(LPOptions.LIGHTNING_DURATION_SECONDS.getTranslationKey(), "Storm Duration (secs)");
+            builder.add(LPOptions.LIGHTNING_DURATION_SECONDS.getDescriptionTranslationKey(), "How many seconds a storm lasts");
+            builder.add(LPOptions.LIGHTNING_STORM_INVERSE_INTENSITY.getTranslationKey(), "Lightning Storm Inverse Intensity");
+            builder.add(LPOptions.LIGHTNING_STORM_INVERSE_INTENSITY.getDescriptionTranslationKey(), "Lightning Storm Inverse Intensity");
+            builder.add(LPOptions.RAGE_COOLDOWN_SECONDS.getTranslationKey(), "Rage Cooldown (secs)");
+            builder.add(LPOptions.RAGE_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the rage ability");
+            builder.add(PlayerTrackingScreen.CHASMS_KEY, "Earthquake");
+            builder.add(PlayerTrackingScreen.LIGHTNING_KEY, "Storm");
+            builder.add(PlayerTrackingScreen.RAGE_KEY, "Rage");
             builder.add(ShockwavePacket.COOLDOWN_MESSAGE_KEY, "This ability is cooling down.");
         }
     }
