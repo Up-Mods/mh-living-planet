@@ -60,6 +60,9 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     private int immobilizedTicks = 0;
     private int shockwaveCooldownTicks = 0;
+    private int lightningCooldownTicks = 0;
+    private int chasmsCooldownTicks = 0;
+    private int getHisAssCooldownTicks = 0;
 
     private float health;
     private boolean phasing = false;
@@ -155,6 +158,24 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                 this.sync();
             }
         }
+        if (this.lightningCooldownTicks > 0) {
+            this.lightningCooldownTicks--;
+            if (this.lightningCooldownTicks <= 0) {
+                this.sync();
+            }
+        }
+        if (this.chasmsCooldownTicks > 0) {
+            this.chasmsCooldownTicks--;
+            if (this.chasmsCooldownTicks <= 0) {
+                this.sync();
+            }
+        }
+        if (this.getHisAssCooldownTicks > 0) {
+            this.getHisAssCooldownTicks--;
+            if (this.getHisAssCooldownTicks <= 0) {
+                this.sync();
+            }
+        }
     }
 
     @Override
@@ -211,6 +232,9 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         ByteBufCodecs.BOOL.encode(buf, this.livingPlanet);
         ByteBufCodecs.BOOL.encode(buf, this.outOfGround);
         ByteBufCodecs.VAR_INT.encode(buf, this.shockwaveCooldownTicks);
+        ByteBufCodecs.VAR_INT.encode(buf, this.lightningCooldownTicks);
+        ByteBufCodecs.VAR_INT.encode(buf, this.chasmsCooldownTicks);
+        ByteBufCodecs.VAR_INT.encode(buf, this.getHisAssCooldownTicks);
         ByteBufCodecs.VAR_INT.encode(buf, this.immobilizedTicks);
         ByteBufCodecs.FLOAT.encode(buf, this.health);
         ByteBufCodecs.BOOL.encode(buf, this.phasing);
@@ -222,6 +246,9 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         this.livingPlanet = ByteBufCodecs.BOOL.decode(buf);
         this.outOfGround = ByteBufCodecs.BOOL.decode(buf);
         this.shockwaveCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
+        this.lightningCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
+        this.chasmsCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
+        this.getHisAssCooldownTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.immobilizedTicks = ByteBufCodecs.VAR_INT.decode(buf);
         this.health = ByteBufCodecs.FLOAT.decode(buf);
         this.phasing = ByteBufCodecs.BOOL.decode(buf);
@@ -258,6 +285,35 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     public void onShockwave() {
         this.shockwaveCooldownTicks = LPOptions.SHOCKWAVE_COOLDOWN_SECONDS.get()*20;
+        this.setOutOfGround(false);
+        this.sync();
+    }
+
+    public boolean canLightning() {
+        return this.lightningCooldownTicks <= 0;
+    }
+
+    public void onLightning() {
+        this.lightningCooldownTicks = LPOptions.LIGHTNING_COOLDOWN_SECONDS.get()*20;
+        this.sync();
+    }
+
+    public boolean canChasms() {
+        return this.chasmsCooldownTicks <= 0;
+    }
+
+    public void onChasms() {
+        this.chasmsCooldownTicks = LPOptions.CHASMS_COOLDOWN_SECONDS.get()*20;
+        this.setOutOfGround(false);
+        this.sync();
+    }
+
+    public boolean canGetHisAss() {
+        return this.getHisAssCooldownTicks <= 0;
+    }
+
+    public void onGetHisAss() {
+        this.getHisAssCooldownTicks = LPOptions.GETHISASS_COOLDOWN_SECONDS.get()*20;
         this.setOutOfGround(false);
         this.sync();
     }
