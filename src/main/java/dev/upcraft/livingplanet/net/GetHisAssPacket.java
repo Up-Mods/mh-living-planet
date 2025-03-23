@@ -27,10 +27,6 @@ public record GetHisAssPacket() implements CustomPacketPayload {
             return;
         }
 
-        if (!cooldowns.isOutOfGround()) {
-            return;
-        }
-
         if (!cooldowns.canGetHisAss()) {
             player.displayClientMessage(Component.translatable(COOLDOWN_MESSAGE_KEY).withStyle(ChatFormatting.RED), true);
             return;

@@ -70,7 +70,7 @@ dependencies {
 
 	modImplementation include("xyz.amymialee:mialib:${project.mialib_version}")
 
-	def cca_modules = ["base", "entity"]
+	def cca_modules = ["base", "entity", "world"]
 
 	cca_modules.each {
 		modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-${it}:${project.cca_version}"

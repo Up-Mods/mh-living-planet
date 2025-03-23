@@ -6,7 +6,10 @@
     "BlockStateBaseMixin",
     "EntityMixin",
     "FoodDataMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "naturaldisasters.LevelMixin",
+    "naturaldisasters.LightningBoltMixin",
+    "naturaldisasters.ServerLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -19,6 +22,8 @@
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.PlayerRendererMixin",
-    "client.ScreenEffectRendererMixin"
+    "client.ScreenEffectRendererMixin",
+    "client.naturaldisasters.CameraMixin",
+    "client.naturaldisasters.LevelRendererMixin"
   ]
 }

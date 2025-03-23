@@ -27,7 +27,8 @@
 	"accessWidener": "living_planet.accesswidener",
 	"custom": {
 		"cardinal-components": [
-			"living_planet:living_planet"
+			"living_planet:living_planet",
+			"living_planet:natural_disasters"
 		]
 	},
 	"depends": {
