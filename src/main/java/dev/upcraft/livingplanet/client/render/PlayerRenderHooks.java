@@ -40,9 +40,9 @@ public class PlayerRenderHooks {
             if (component.isOutOfGround()) {
                 factor = 1-factor;
             }
-            maxY = LivingPlanetComponent.OUT_OF_GROUND_DIMENSIONS.scale(
+            maxY = LivingPlanetComponent.getOutOfGroundDimensions().scale(
                     1f,
-                    (float) Mth.lerp(factor, 1f, LivingPlanetComponent.IN_GROUND_DIMENSIONS.height()/LivingPlanetComponent.OUT_OF_GROUND_DIMENSIONS.height()))
+                    (float) Mth.lerp(factor, 1f, LivingPlanetComponent.IN_GROUND_DIMENSIONS.height()/LivingPlanetComponent.getOutOfGroundDimensions().height()))
                     .height();
         } else {
             maxY = player.getBbHeight();

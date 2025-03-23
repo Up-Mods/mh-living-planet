@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
@@ -41,7 +42,10 @@ import static dev.upcraft.livingplanet.LivingPlanet.id;
 public class LivingPlanetComponent implements Component, AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
     public static final ResourceLocation STEP_HEIGHT_BOOST_ID = id("step_height_boost");
     public static final EntityDimensions IN_GROUND_DIMENSIONS = EntityDimensions.fixed(0.25F, 0.25F);
-    public static final EntityDimensions OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(4.0F, 7.0F);
+    private static EntityDimensions OUT_OF_GROUND_DIMENSIONS;
+    static {
+        updateDimensions();
+    }
     private static final int DEFAULT_IMMOBILIZED_TIME = 20 * 120;
     private static final int DEFAULT_SHOCKWAVE_COOLDOWN = 20 * 120;
     private static final float MAX_HEALTH = 100.0F;
@@ -69,9 +73,23 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     private long timeChangedState = -1;
 
     private final Deque<Wave> waves = new ArrayDeque<>();
+    private EntityDimensions lastDim;
 
     public LivingPlanetComponent(Player player) {
         this.player = player;
+    }
+
+    public static void updateDimensions() {
+        OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(LPOptions.SCALE.get()*4f, LPOptions.SCALE.get()*7f);
+    }
+
+    public static EntityDimensions getOutOfGroundDimensions() {
+        return OUT_OF_GROUND_DIMENSIONS;
+    }
+
+    public EntityDimensions outOfGroundDimensions() {
+        this.lastDim = OUT_OF_GROUND_DIMENSIONS;
+        return OUT_OF_GROUND_DIMENSIONS;
     }
 
     public void setOutOfGround(boolean visible) {
@@ -141,9 +159,16 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         tag.putBoolean("phasing", this.phasing);
     }
 
+    private void checkDimensions() {
+        if (this.lastDim == null || this.lastDim != OUT_OF_GROUND_DIMENSIONS) {
+            this.player.refreshDimensions();
+        }
+    }
+
     @Override
     public void serverTick() {
         this.updateSurroundings();
+        this.checkDimensions();
         if(this.immobilizedTicks > 0) {
             this.immobilizedTicks--;
 
@@ -181,6 +206,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     @Override
     public void clientTick() {
         this.updateSurroundings();
+        this.checkDimensions();
         float ticksSinceChangedState = this.ticksSinceChangedState(0f);
         boolean isChanging = ticksSinceChangedState <= 10;
         if (this.isOutOfGround() || isChanging) {

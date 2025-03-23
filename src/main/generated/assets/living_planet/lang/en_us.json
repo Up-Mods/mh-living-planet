@@ -26,6 +26,8 @@
   "mvalue.living_planet.lightning_duration.desc": "How many seconds a storm lasts",
   "mvalue.living_planet.lightning_storm/inverse_intensity": "Lightning Storm Inverse Intensity",
   "mvalue.living_planet.lightning_storm/inverse_intensity.desc": "Lightning Storm Inverse Intensity",
+  "mvalue.living_planet.lp_scale": "Scale",
+  "mvalue.living_planet.lp_scale.desc": "How big the living planet is",
   "mvalue.living_planet.rage_cooldown": "Rage Cooldown (secs)",
   "mvalue.living_planet.rage_cooldown.desc": "How many seconds a player must wait between using the rage ability",
   "mvalue.living_planet.shockwave_cooldown": "Shockwave Cooldown (secs)",

@@ -85,6 +85,8 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             builder.add(LPOptions.LIGHTNING_STORM_INVERSE_INTENSITY.getDescriptionTranslationKey(), "Lightning Storm Inverse Intensity");
             builder.add(LPOptions.RAGE_COOLDOWN_SECONDS.getTranslationKey(), "Rage Cooldown (secs)");
             builder.add(LPOptions.RAGE_COOLDOWN_SECONDS.getDescriptionTranslationKey(), "How many seconds a player must wait between using the rage ability");
+            builder.add(LPOptions.SCALE.getTranslationKey(), "Scale");
+            builder.add(LPOptions.SCALE.getDescriptionTranslationKey(), "How big the living planet is");
             builder.add(PlayerTrackingScreen.CHASMS_KEY, "Earthquake");
             builder.add(PlayerTrackingScreen.LIGHTNING_KEY, "Storm");
             builder.add(PlayerTrackingScreen.RAGE_KEY, "Rage");

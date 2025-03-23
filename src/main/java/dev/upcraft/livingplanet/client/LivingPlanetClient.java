@@ -2,6 +2,7 @@ package dev.upcraft.livingplanet.client;
 
 import dev.upcraft.livingplanet.client.render.ShockwaveBlockRenderer;
 import dev.upcraft.livingplanet.client.tracking.Tracker;
+import dev.upcraft.livingplanet.component.LivingPlanetComponent;
 import dev.upcraft.livingplanet.entity.LPEntities;
 import dev.upcraft.livingplanet.particle.LPParticles;
 import dev.upcraft.sparkweave.api.client.event.RegisterEntityRenderersEvent;
@@ -9,7 +10,10 @@ import dev.upcraft.sparkweave.api.entrypoint.ClientEntryPoint;
 import dev.upcraft.sparkweave.api.platform.ModContainer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+
+import java.util.List;
 
 public class LivingPlanetClient implements ClientEntryPoint {
 
