@@ -18,8 +18,8 @@ public class LPOptions {
     public static final MValue.MValueInteger CHASMS_COOLDOWN_SECONDS = MValue.ofInteger(CATEGORY, id("chasms_cooldown"), Items.CLOCK.getDefaultInstance(), 600, 0, 600);
     public static final MValue.MValueInteger EARTHQUAKE_MIN_HOLE_COUNT = new MValue.MValueInteger(NATURAL_DISASTERS_CATEGORY, id("earthquake/min_hole_count"), $ -> Items.CRACKED_STONE_BRICKS.getDefaultInstance(), 9, 1, 20);
     public static final MValue.MValueInteger EARTHQUAKE_MAX_HOLE_COUNT = new MValue.MValueInteger(NATURAL_DISASTERS_CATEGORY, id("earthquake/max_hole_count"), $ -> Items.CRACKED_STONE_BRICKS.getDefaultInstance(), 20, 3, 30);
-    public static final MValue.MValueInteger GETHISASS_COOLDOWN_SECONDS = MValue.ofInteger(CATEGORY, id("get_his_ass_cooldown"), Items.CLOCK.getDefaultInstance(), 600, 0, 600);
-    public static final MValue.MValueInteger GETHISASS_DURATION_SECONDS = MValue.ofInteger(CATEGORY, id("get_his_ass_duration"), Items.CLOCK.getDefaultInstance(), 60, 0, 600);
+    public static final MValue.MValueInteger RAGE_COOLDOWN_SECONDS = MValue.ofInteger(CATEGORY, id("rage_cooldown"), Items.CLOCK.getDefaultInstance(), 600, 0, 600);
+    public static final MValue.MValueInteger RAGE_DURATION_SECONDS = MValue.ofInteger(CATEGORY, id("rage_duration"), Items.CLOCK.getDefaultInstance(), 60, 0, 600);
     public static final MValue.MValueFloat THROWN_ROCK_DAMAGE = MValue.ofFloat(CATEGORY, id("thrown_rock_damage"), Items.STONE.getDefaultInstance(), 3f, 1f, 20f);
 
     public static void init() {}

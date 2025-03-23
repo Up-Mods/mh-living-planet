@@ -6,6 +6,7 @@
     "BlockStateBaseMixin",
     "EntityMixin",
     "FoodDataMixin",
+    "MobMixin",
     "PlayerMixin",
     "naturaldisasters.LevelMixin",
     "naturaldisasters.LightningBoltMixin",

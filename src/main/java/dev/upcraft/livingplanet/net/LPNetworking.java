@@ -30,7 +30,7 @@ public class LPNetworking {
         registerC2S(ShockwavePacket.TYPE, ShockwavePacket.STREAM_CODEC, ShockwavePacket::handle);
         registerC2S(LightningPacket.TYPE, LightningPacket.STREAM_CODEC, LightningPacket::handle);
         registerC2S(ChasmsPacket.TYPE, ChasmsPacket.STREAM_CODEC, ChasmsPacket::handle);
-        registerC2S(GetHisAssPacket.TYPE, GetHisAssPacket.STREAM_CODEC, GetHisAssPacket::handle);
+        registerC2S(RagePacket.TYPE, RagePacket.STREAM_CODEC, RagePacket::handle);
 
         registerC2S(RockThrowPacket.TYPE, RockThrowPacket.CODEC, RockThrowPacket::handle);
 

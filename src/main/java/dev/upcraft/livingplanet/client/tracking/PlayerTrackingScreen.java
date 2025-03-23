@@ -2,7 +2,7 @@ package dev.upcraft.livingplanet.client.tracking;
 
 import dev.upcraft.livingplanet.component.LPComponents;
 import dev.upcraft.livingplanet.net.ChasmsPacket;
-import dev.upcraft.livingplanet.net.GetHisAssPacket;
+import dev.upcraft.livingplanet.net.RagePacket;
 import dev.upcraft.livingplanet.net.LightningPacket;
 import dev.upcraft.livingplanet.net.ShockwavePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 public class PlayerTrackingScreen extends Screen {
     public static final String DESELECT_KEY = "gui.living_planet.tracker.deselect";
     public static final String LIGHTNING_KEY = "gui.living_planet.tracker.lightning";
-    public static final String GET_HIS_ASS_KEY = "gui.living_planet.tracker.get_his_ass";
+    public static final String RAGE_KEY = "gui.living_planet.tracker.rage";
     public static final String CHASMS_KEY = "gui.living_planet.tracker.chasms";
     private final Tracker tracker;
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
@@ -44,12 +44,12 @@ public class PlayerTrackingScreen extends Screen {
             lightningButton.active = false;
             lightningButton.setTooltip(Tooltip.create(Component.translatable(ShockwavePacket.COOLDOWN_MESSAGE_KEY)));
         }
-        var getHisAssButton = footer.addChild(Button.builder(Component.translatable(GET_HIS_ASS_KEY), button -> ClientPlayNetworking.send(new GetHisAssPacket()))
+        var rageButton = footer.addChild(Button.builder(Component.translatable(RAGE_KEY), button -> ClientPlayNetworking.send(new RagePacket()))
                 .width(80)
                 .build());
-        if (!component.canGetHisAss()) {
-            getHisAssButton.active = false;
-            getHisAssButton.setTooltip(Tooltip.create(Component.translatable(ShockwavePacket.COOLDOWN_MESSAGE_KEY)));
+        if (!component.canRage()) {
+            rageButton.active = false;
+            rageButton.setTooltip(Tooltip.create(Component.translatable(ShockwavePacket.COOLDOWN_MESSAGE_KEY)));
         }
         var chasmsButton = footer.addChild(Button.builder(Component.translatable(CHASMS_KEY), button -> ClientPlayNetworking.send(new ChasmsPacket()))
                 .width(80)
