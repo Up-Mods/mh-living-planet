@@ -15,17 +15,19 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.ladysnake.cca.api.v3.component.Component;
@@ -199,6 +201,25 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
             this.rageCooldownTicks--;
             if (this.rageCooldownTicks <= 0) {
                 this.sync();
+            }
+        }
+
+        if (this.isOutOfGround()) {
+            AABB aABB = this.player.getBoundingBox().inflate(0.2);
+                for (BlockPos blockPos : BlockPos.betweenClosed(
+                        Mth.floor(aABB.minX), Mth.floor(aABB.minY), Mth.floor(aABB.minZ), Mth.floor(aABB.maxX), Mth.floor(aABB.maxY), Mth.floor(aABB.maxZ)
+                )) {
+                    BlockState blockState = this.player.level().getBlockState(blockPos);
+                    Block block = blockState.getBlock();
+                    if (block instanceof LeavesBlock || blockState.is(BlockTags.LOGS) || block instanceof HugeMushroomBlock) {
+                        this.player.level().destroyBlock(blockPos, true, this.player);
+                    }
+                }
+            for (BlockPos pos : BlockPos.betweenClosed(BlockPos.containing(aABB.getMinPosition().subtract(0.0, 3.0, 0.0)), BlockPos.containing(aABB.getMaxPosition().with(Direction.Axis
+                    .Y, aABB.minY)))) {
+                if (this.player.level().getBlockState(pos).getBlock() instanceof SpreadingSnowyDirtBlock) {
+                    this.player.level().setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
+                }
             }
         }
     }
