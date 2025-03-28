@@ -20,6 +20,7 @@
     "client.EntityRenderDispatcherMixin",
     "client.GuiMixin",
     "client.InventoryScreenMixin",
+    "client.KeyboardInputMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.PlayerRendererMixin",
