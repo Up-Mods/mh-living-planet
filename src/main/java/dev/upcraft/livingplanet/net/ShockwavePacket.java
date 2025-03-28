@@ -54,58 +54,20 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
 
         var level = player.serverLevel();
 
-        var forwards = ctx.player().getDirection();
-        var backwards = forwards.getOpposite();
-        var left = forwards.getCounterClockWise();
-        var right = forwards.getClockWise();
-        var mutablePos = this.pos.mutable();
-
-        mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(forwards);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(forwards);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(backwards);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(right);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(backwards);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(left);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
-
-        mutablePos.move(left).move(forwards);
-        throwBlock(level, mutablePos, this.pos, cooldowns.getRandomState(random::nextInt), player);
+        AABB boundingBox = player.getBoundingBox();
+        BlockPos.randomBetweenClosed(random,
+                (int) (20*LPOptions.SCALE.get()*LPOptions.SCALE.get()),
+                (int) boundingBox.minX,
+                (int) boundingBox.minY,
+                (int) boundingBox.minZ,
+                (int) Math.ceil(boundingBox.maxX),
+                (int) Math.ceil(boundingBox.minY + player.getBbHeight()*0.6),
+                (int) Math.ceil(boundingBox.maxZ)).forEach(pos ->
+            throwBlock(level, pos, this.pos, cooldowns.getRandomState(random::nextInt), player));
 
         var damageSource = level.damageSources().source(LPDamageTypes.SHOCKWAVE, player);
 
-        var aabb = new AABB(
-                this.pos.getBottomCenter()
-                        .add(Vec3.ZERO.with(forwards.getAxis(), forwards.getAxisDirection().getStep()*0.5))
-                        .add(Vec3.ZERO.with(left.getAxis(), left.getAxisDirection().getStep()*2.5)),
-                this.pos.getBottomCenter()
-                        .add(0, 2, 0)
-                        .add(Vec3.ZERO.with(forwards.getAxis(), forwards.getAxisDirection().getStep()*2.5))
-                        .add(Vec3.ZERO.with(right.getAxis(), right.getAxisDirection().getStep()*2.5)));
+        var aabb = player.getBoundingBox().inflate(10.0);
         level.getEntities(player, aabb, e -> !(e.isSpectator()) && !(e instanceof Player p && p.isCreative()) && e.isAlive() && e instanceof LivingEntity l && player.canAttack(l)).forEach(entity -> {
             pushEntity(entity, damageSource, this.pos);
         });
@@ -116,17 +78,17 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
     public static void pushEntity(Entity entity, DamageSource damageSource, BlockPos centrePos) {
         float damageAmount = LPOptions.SHOCKWAVE_DAMAGE.get();
         entity.hurt(damageSource, damageAmount);
-        var dir = entity.position().subtract(centrePos.getBottomCenter()).normalize().add(0.0, 0.7, 0.0).scale(0.3);
+        var dir = entity.position().subtract(centrePos.getBottomCenter()).normalize().add(0.0, 2.0, 0.0).scale(2.7);
         entity.push(dir);
         entity.hurtMarked = true;
     }
 
-    private static void throwBlock(ServerLevel level, BlockPos.MutableBlockPos mutablePos, BlockPos centrePos, BlockState state, Player owner) {
+    private static void throwBlock(ServerLevel level, BlockPos pos, BlockPos centrePos, BlockState state, Player owner) {
         var dir = owner.getLookAngle()
                 .with(Direction.Axis.Y, 0)
                 .normalize()
-                .add(0.0, 0.7, 0.0)
-                .scale(0.7);
-        ShockwaveBlockEntity.create(level, mutablePos, state, dir, owner, centrePos);
+                .add(0.0, 0.4, 0.0)
+                .scale(2.7);
+        ShockwaveBlockEntity.create(level, pos, state, dir, owner, centrePos);
     }
 }

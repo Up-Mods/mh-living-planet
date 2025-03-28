@@ -306,7 +306,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public boolean canShockwave() {
-        return this.shockwaveCooldownTicks <= 0;
+        return true;//this.shockwaveCooldownTicks <= 0;
     }
 
     public void onShockwave() {

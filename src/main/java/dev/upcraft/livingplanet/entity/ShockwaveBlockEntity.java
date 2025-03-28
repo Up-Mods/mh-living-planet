@@ -1,5 +1,6 @@
 package dev.upcraft.livingplanet.entity;
 
+import dev.upcraft.livingplanet.LPOptions;
 import dev.upcraft.livingplanet.damage.LPDamageTypes;
 import dev.upcraft.livingplanet.net.ShockwavePacket;
 import net.minecraft.core.BlockPos;
@@ -72,7 +73,11 @@ public class ShockwaveBlockEntity extends FallingBlockEntity implements OwnableE
                     .and(e -> !e.getUUID().equals(this.ownerUuid));
             var damageSource = this.damageSources().source(LPDamageTypes.SHOCKWAVE, this.getOwner());
             this.level().getEntities(this, this.getBoundingBox().inflate(0.3), predicate).forEach(entity -> {
-                ShockwavePacket.pushEntity(entity, damageSource, this.centrePos);
+                float damageAmount = LPOptions.SHOCKWAVE_DAMAGE.get();
+                entity.hurt(damageSource, damageAmount);
+                var dir = entity.position().subtract(this.position()).normalize().add(0.0, 0.6, 0.0);
+                entity.push(dir);
+                entity.hurtMarked = true;
 
                 if (!this.isRemoved()) {
                     this.level().broadcastEntityEvent(this, EntityEvent.DEATH);
