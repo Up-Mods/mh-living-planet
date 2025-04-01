@@ -155,6 +155,9 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             this.tag(net.minecraft.tags.BlockTags.BEDS);
             this.tag(net.minecraft.tags.BlockTags.DOORS);
             this.tag(net.minecraft.tags.BlockTags.TERRACOTTA);
+            this.tag(net.minecraft.tags.BlockTags.WOODEN_STAIRS);
+            this.tag(net.minecraft.tags.BlockTags.WOODEN_FENCES);
+            this.tag(net.minecraft.tags.BlockTags.WALLS);
             this.tag(ConventionalBlockTags.GLASS_PANES);
             this.tag(ConventionalBlockTags.CHESTS);
             this.tag(ConventionalBlockTags.COBBLESTONES);
@@ -170,7 +173,10 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
                     .addTag(ConventionalBlockTags.COBBLESTONES)
                     .add(Blocks.BROWN_MUSHROOM_BLOCK.builtInRegistryHolder().key())
                     .add(Blocks.RED_MUSHROOM_BLOCK.builtInRegistryHolder().key())
-                    .add(Blocks.MUSHROOM_STEM.builtInRegistryHolder().key());
+                    .add(Blocks.MUSHROOM_STEM.builtInRegistryHolder().key())
+                    .addTag(net.minecraft.tags.BlockTags.WOODEN_STAIRS)
+                    .addTag(net.minecraft.tags.BlockTags.WOODEN_FENCES)
+                    .addTag(net.minecraft.tags.BlockTags.WALLS);
             this.tag(LPTags.LIVING_PLANET_BLOCKS)
                     .addTag(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES)
                     .addTag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES)
