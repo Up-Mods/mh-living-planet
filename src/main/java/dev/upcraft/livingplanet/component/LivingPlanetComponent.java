@@ -205,7 +205,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         }
 
         if (this.isOutOfGround()) {
-            AABB aABB = this.player.getBoundingBox().inflate(0.2);
+            AABB aABB = this.player.getBoundingBox().inflate(1.2, 0.2, 1.2);
                 for (BlockPos blockPos : BlockPos.betweenClosed(
                         Mth.floor(aABB.minX), Mth.floor(aABB.minY), Mth.floor(aABB.minZ), Mth.floor(aABB.maxX), Mth.floor(aABB.maxY), Mth.floor(aABB.maxZ)
                 )) {
