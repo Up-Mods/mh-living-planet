@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -147,6 +148,27 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
         protected void addTags(HolderLookup.Provider wrapperLookup) {
             this.tag(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES);
             this.tag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES);
+            this.tag(net.minecraft.tags.BlockTags.LEAVES);
+            this.tag(net.minecraft.tags.BlockTags.LOGS);
+            this.tag(net.minecraft.tags.BlockTags.BEDS);
+            this.tag(net.minecraft.tags.BlockTags.DOORS);
+            this.tag(net.minecraft.tags.BlockTags.TERRACOTTA);
+            this.tag(ConventionalBlockTags.GLASS_PANES);
+            this.tag(ConventionalBlockTags.CHESTS);
+            this.tag(ConventionalBlockTags.COBBLESTONES);
+            this.tag(LPTags.LP_DESTROYABLE_BLOCKS)
+                    .addTag(net.minecraft.tags.BlockTags.LEAVES)
+                    .addTag(net.minecraft.tags.BlockTags.LOGS)
+                    .addTag(ConventionalBlockTags.GLASS_PANES)
+                    .add(Blocks.IRON_BARS.builtInRegistryHolder().key())
+                    .addTag(ConventionalBlockTags.CHESTS)
+                    .addTag(net.minecraft.tags.BlockTags.BEDS)
+                    .addTag(net.minecraft.tags.BlockTags.DOORS)
+                    .addTag(net.minecraft.tags.BlockTags.TERRACOTTA)
+                    .addTag(ConventionalBlockTags.COBBLESTONES)
+                    .add(Blocks.BROWN_MUSHROOM_BLOCK.builtInRegistryHolder().key())
+                    .add(Blocks.RED_MUSHROOM_BLOCK.builtInRegistryHolder().key())
+                    .add(Blocks.MUSHROOM_STEM.builtInRegistryHolder().key());
             this.tag(LPTags.LIVING_PLANET_BLOCKS)
                     .addTag(net.minecraft.tags.BlockTags.OVERWORLD_CARVER_REPLACEABLES)
                     .addTag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES)

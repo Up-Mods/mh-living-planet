@@ -210,8 +210,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
                         Mth.floor(aABB.minX), Mth.floor(aABB.minY), Mth.floor(aABB.minZ), Mth.floor(aABB.maxX), Mth.floor(aABB.maxY), Mth.floor(aABB.maxZ)
                 )) {
                     BlockState blockState = this.player.level().getBlockState(blockPos);
-                    Block block = blockState.getBlock();
-                    if (block instanceof LeavesBlock || blockState.is(BlockTags.LOGS) || block instanceof HugeMushroomBlock) {
+                    if (blockState.is(LPTags.LP_DESTROYABLE_BLOCKS)) {
                         this.player.level().destroyBlock(blockPos, true, this.player);
                     }
                 }

@@ -1,0 +1,16 @@
+{
+  "values": [
+    "#minecraft:leaves",
+    "#minecraft:logs",
+    "#c:glass_panes",
+    "minecraft:iron_bars",
+    "#c:chests",
+    "#minecraft:beds",
+    "#minecraft:doors",
+    "#minecraft:terracotta",
+    "#c:cobblestones",
+    "minecraft:brown_mushroom_block",
+    "minecraft:red_mushroom_block",
+    "minecraft:mushroom_stem"
+  ]
+}
