@@ -56,7 +56,7 @@ public record ShockwavePacket(BlockPos pos) implements CustomPacketPayload {
 
         AABB boundingBox = player.getBoundingBox();
         BlockPos.randomBetweenClosed(random,
-                (int) (20*LPOptions.SCALE.get()*LPOptions.SCALE.get()),
+                (int) (20*LPOptions.SCALE_HORIZONTAL.get()*LPOptions.SCALE_VERTICAL.get()),
                 (int) boundingBox.minX,
                 (int) boundingBox.minY,
                 (int) boundingBox.minZ,

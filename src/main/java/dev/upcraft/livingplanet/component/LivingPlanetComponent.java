@@ -82,7 +82,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
     }
 
     public static void updateDimensions() {
-        OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(LPOptions.SCALE.get()*4f, LPOptions.SCALE.get()*7f);
+        OUT_OF_GROUND_DIMENSIONS = EntityDimensions.scalable(LPOptions.SCALE_HORIZONTAL.get()*4f, LPOptions.SCALE_VERTICAL.get()*7f);
     }
 
     public static EntityDimensions getOutOfGroundDimensions() {
