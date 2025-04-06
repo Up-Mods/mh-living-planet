@@ -47,6 +47,7 @@ public class PlayerRenderHooks {
         } else {
             maxY = player.getBbHeight();
         }
+        double ratio = LivingPlanetComponent.getOutOfGroundDimensions().width()/LivingPlanetComponent.getOutOfGroundDimensions().height();
 
         var random = new SingleThreadedRandomSource(SEED);
         var level = player.level();
@@ -60,7 +61,7 @@ public class PlayerRenderHooks {
             renderBlockAt(new Vector3f(0, layerY, 0), component.getRandomState(random::nextInt), poseStack, buffer, blockRenderDispatcher, levelHack, player);
             poseStack.popPose();
             double distanceFromTop = Math.min((maxY - layerY), maxY)/3.0;
-            double displacement = distanceFromTop*distanceFromTop;
+            double displacement = ratio * (distanceFromTop*distanceFromTop);
             int baseInstances = Math.max((int) (Math.PI * displacement * 4), 4);
             for (int instance = 0; instance < baseInstances; instance++) {
                 poseStack.pushPose();
