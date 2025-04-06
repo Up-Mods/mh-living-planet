@@ -2,6 +2,7 @@
   "values": [
     "#minecraft:leaves",
     "#minecraft:logs",
+    "#minecraft:planks",
     "#c:glass_panes",
     "minecraft:iron_bars",
     "#c:chests",
@@ -13,6 +14,7 @@
     "minecraft:red_mushroom_block",
     "minecraft:mushroom_stem",
     "#minecraft:wooden_stairs",
+    "#minecraft:slabs",
     "#minecraft:wooden_fences",
     "#minecraft:walls"
   ]

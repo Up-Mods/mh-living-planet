@@ -152,18 +152,21 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
             this.tag(net.minecraft.tags.BlockTags.NETHER_CARVER_REPLACEABLES);
             this.tag(net.minecraft.tags.BlockTags.LEAVES);
             this.tag(net.minecraft.tags.BlockTags.LOGS);
+            this.tag(net.minecraft.tags.BlockTags.PLANKS);
             this.tag(net.minecraft.tags.BlockTags.BEDS);
             this.tag(net.minecraft.tags.BlockTags.DOORS);
             this.tag(net.minecraft.tags.BlockTags.TERRACOTTA);
             this.tag(net.minecraft.tags.BlockTags.WOODEN_STAIRS);
             this.tag(net.minecraft.tags.BlockTags.WOODEN_FENCES);
             this.tag(net.minecraft.tags.BlockTags.WALLS);
+            this.tag(net.minecraft.tags.BlockTags.SLABS);
             this.tag(ConventionalBlockTags.GLASS_PANES);
             this.tag(ConventionalBlockTags.CHESTS);
             this.tag(ConventionalBlockTags.COBBLESTONES);
             this.tag(LPTags.LP_DESTROYABLE_BLOCKS)
                     .addTag(net.minecraft.tags.BlockTags.LEAVES)
                     .addTag(net.minecraft.tags.BlockTags.LOGS)
+                    .addTag(net.minecraft.tags.BlockTags.PLANKS)
                     .addTag(ConventionalBlockTags.GLASS_PANES)
                     .add(Blocks.IRON_BARS.builtInRegistryHolder().key())
                     .addTag(ConventionalBlockTags.CHESTS)
@@ -175,6 +178,7 @@ public class LivingPlanetData implements DataGeneratorEntrypoint {
                     .add(Blocks.RED_MUSHROOM_BLOCK.builtInRegistryHolder().key())
                     .add(Blocks.MUSHROOM_STEM.builtInRegistryHolder().key())
                     .addTag(net.minecraft.tags.BlockTags.WOODEN_STAIRS)
+                    .addTag(net.minecraft.tags.BlockTags.SLABS)
                     .addTag(net.minecraft.tags.BlockTags.WOODEN_FENCES)
                     .addTag(net.minecraft.tags.BlockTags.WALLS);
             this.tag(LPTags.LIVING_PLANET_BLOCKS)
