@@ -34,7 +34,7 @@ public abstract class PlayerMixin extends LivingEntity {
                 return LivingPlanetComponent.IN_GROUND_DIMENSIONS;
             }
             else {
-                return planet.outOfGroundDimensions();
+                return LivingPlanetComponent.getOutOfGroundDimensions();
             }
         }
 

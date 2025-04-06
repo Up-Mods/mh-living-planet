@@ -89,7 +89,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
         return OUT_OF_GROUND_DIMENSIONS;
     }
 
-    public EntityDimensions outOfGroundDimensions() {
+    public EntityDimensions getAndUpdateOutOfGroundDimensions() {
         this.lastDim = OUT_OF_GROUND_DIMENSIONS;
         return OUT_OF_GROUND_DIMENSIONS;
     }
@@ -132,6 +132,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     private void updatePlayerState() {
         this.player.refreshDimensions();
+        this.lastDim = OUT_OF_GROUND_DIMENSIONS;
         var attr = this.player.getAttribute(Attributes.STEP_HEIGHT);
         if (attr != null) {
             if (this.livingPlanet) {
@@ -163,6 +164,7 @@ public class LivingPlanetComponent implements Component, AutoSyncedComponent, Se
 
     private void checkDimensions() {
         if (this.lastDim == null || this.lastDim != OUT_OF_GROUND_DIMENSIONS) {
+            this.lastDim = OUT_OF_GROUND_DIMENSIONS;
             this.player.refreshDimensions();
         }
     }
